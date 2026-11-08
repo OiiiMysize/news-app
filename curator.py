@@ -20,6 +20,7 @@ import os
 import re
 import shutil
 import sys
+import threading
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
@@ -556,6 +557,36 @@ def fetch_all_feeds(feeds_config: Dict[str, Any]) -> Dict[str, List[Dict[str, An
 # Gemini Curation Logic
 # ---------------------------------------------------------------------------
 
+def compact_candidates_for_prompt(
+    categorized_items: Dict[str, List[Dict[str, Any]]],
+    max_per_category: int = 14,
+) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Keep the prompt payload fast and compact by selecting the highest-priority
+    items across feeds in each category and omitting image_url (which is
+    re-attached deterministically in ensure_briefing_images).
+    """
+    compacted: Dict[str, List[Dict[str, Any]]] = {}
+    for cat_key, items in categorized_items.items():
+        # Sort by feed_rank (1 = lead story of a feed) so all feeds in a category get fair representation
+        sorted_items = sorted(items, key=lambda x: (x.get("feed_rank", 99), x.get("published_utc", "")))
+        cap = 18 if cat_key == "sports" else max_per_category
+        slim_list = []
+        for it in sorted_items[:cap]:
+            slim_list.append(
+                {
+                    "source_name": it["source_name"],
+                    "feed_rank": it["feed_rank"],
+                    "title": it["title"],
+                    "summary": (it.get("summary") or "")[:280],
+                    "url": it["url"],
+                    "estimated_read_mins": it.get("estimated_read_mins", 3),
+                }
+            )
+        compacted[cat_key] = slim_list
+    return compacted
+
+
 def build_gemini_prompt(
     categorized_items: Dict[str, List[Dict[str, Any]]],
     day_of_week: str,
@@ -572,16 +603,18 @@ def build_gemini_prompt(
         else f"TODAY IS {day_of_week.upper()} ({date_str}): Set `monday_releases` to null."
     )
 
+    compact_items = compact_candidates_for_prompt(categorized_items)
+
     prompt = f"""You are the Chief Editor of **Daybreak**, a personal daily news dispatch for a reader based in the UK.
 Today is **{day_of_week}, {date_str}**.
 
-Below is a JSON object containing fresh RSS feed entries grouped by category (`uk_news`, `world_news`, `tech_ai`, `sports`, `entertainment`, `food`, `positive_news`, `niche_hobbies`). Each item includes `feed_rank` (its front-page priority in that publication), `source_name`, `title`, `summary`, `url`, `image_url`, `published_utc`, and `estimated_read_mins`.
+Below is a JSON object containing fresh RSS feed entries grouped by category (`uk_news`, `world_news`, `tech_ai`, `sports`, `entertainment`, `food`, `positive_news`, `niche_hobbies`). Each item includes `feed_rank` (its front-page priority in that publication), `source_name`, `title`, `summary`, `url`, and `estimated_read_mins`.
 
 ### 1. EDITORIAL SELECTION & DEDUPLICATION RULES
-- **Cross-Source Consensus (#1 Signal):** When multiple feeds cover the same story (e.g., BBC, The Guardian, and Sky News reporting on the same UK event, or Ars Technica and The Verge covering the same AI release), treat that overlap as the strongest indicator of importance. Deduplicate them into a **single** story, select the best primary URL, pass through its `image_url` (or an `image_url` from one of the corroborating items if the primary lacked one), and list the other outlets in `corroborating_sources`.
+- **Cross-Source Consensus (#1 Signal):** When multiple feeds cover the same story (e.g., BBC, The Guardian, and Sky News reporting on the same UK event, or Ars Technica and The Verge covering the same AI release), treat that overlap as the strongest indicator of importance. Deduplicate them into a **single** story, select the best primary URL, and list the other outlets in `corroborating_sources`.
 - **Editorial Rank & Impact:** Prioritize stories with low `feed_rank` (front-page leads) and high civic, economic, scientific, or cultural weight. Skip clickbait, minor local crime, celebrity gossip, or repetitive opinion pieces.
 - **Topic Diversity:** Ensure stories within a category cover distinct topics rather than multiple angles of the exact same event.
-- **URL & Image Integrity:** You MUST use the exact `url`, `image_url`, and `source_name` provided in the candidate feed items. Never invent URLs.
+- **URL Integrity:** You MUST use the exact `url` and `source_name` provided in the candidate feed items. Never invent URLs. Leave `image_url` as null (images are attached automatically after curation).
 
 ### 2. STRICT CATEGORY QUOTAS
 Across `top_stories` and `stories` combined, enforce the following exact category quotas:
@@ -606,7 +639,7 @@ Across `top_stories` and `stories` combined, enforce the following exact categor
 - {monday_instruction}
 
 ### CANDIDATE RSS ITEMS BY CATEGORY:
-{json.dumps(categorized_items, ensure_ascii=False, indent=2)}
+{json.dumps(compact_items, ensure_ascii=False, separators=(",", ":"))}
 """
     return prompt
 
@@ -616,7 +649,7 @@ def curate_with_gemini(
     day_of_week: str,
     date_str: str,
 ) -> DailyBriefing:
-    """Call Gemini 3.8 Flash via the Interactions API with Structured Output."""
+    """Call Gemini 3.8 Flash via the Interactions API with Structured Output and strict timeout."""
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError(
@@ -624,29 +657,49 @@ def curate_with_gemini(
             "Set GEMINI_API_KEY or run with --fallback to generate a deterministic preview from live RSS feeds."
         )
 
-    client = genai.Client(api_key=api_key)
     prompt = build_gemini_prompt(categorized_items, day_of_week, date_str)
-
     logger.info(
-        "Calling Gemini Interactions API (model=%s, day=%s)...",
+        "Calling Gemini Interactions API (model=%s, day=%s, prompt_chars=%d)...",
         MODEL_ID,
         day_of_week,
-    )
-    interaction = client.interactions.create(
-        model=MODEL_ID,
-        system_instruction=(
-            "You are a precise, insightful UK news editor. Always return valid JSON "
-            "matching the provided schema and strictly use real URLs and image_urls from the input feed data."
-        ),
-        input=prompt,
-        response_format={
-            "type": "text",
-            "mime_type": "application/json",
-            "schema": DailyBriefing.model_json_schema(),
-        },
+        len(prompt),
     )
 
-    output_text = interaction.output_text
+    result_holder: Dict[str, Any] = {}
+
+    def _invoke_gemini() -> None:
+        try:
+            client = genai.Client(api_key=api_key, http_options={"timeout": 45000})
+            interaction = client.interactions.create(
+                model=MODEL_ID,
+                system_instruction=(
+                    "You are a precise, insightful UK news editor. Always return valid JSON "
+                    "matching the provided schema and strictly use real URLs from the input feed data."
+                ),
+                input=prompt,
+                generation_config={"thinking_level": "low"},
+                response_format={
+                    "type": "text",
+                    "mime_type": "application/json",
+                    "schema": DailyBriefing.model_json_schema(),
+                },
+                timeout=45.0,
+            )
+            result_holder["output_text"] = interaction.output_text or ""
+        except Exception as exc:
+            result_holder["error"] = exc
+
+    # Use a daemon thread so a hung socket can never block process exit
+    worker = threading.Thread(target=_invoke_gemini, daemon=True)
+    worker.start()
+    worker.join(timeout=50.0)
+
+    if worker.is_alive():
+        raise RuntimeError("Gemini API call timed out after 50 seconds.")
+    if "error" in result_holder:
+        raise result_holder["error"]
+
+    output_text = result_holder.get("output_text", "")
     if not output_text:
         raise RuntimeError("Gemini returned an empty response.")
 

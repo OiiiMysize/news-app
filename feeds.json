@@ -98,11 +98,11 @@
   "entertainment": {
     "label": "Entertainment & Culture",
     "freshness_hours": 72,
-    "max_items_per_feed": 10,
+    "max_items_per_feed": 8,
     "feeds": [
       {
-        "name": "Empire Online - Film & TV",
-        "url": "https://www.empireonline.com/feed/"
+        "name": "IndieWire - Film & TV",
+        "url": "https://www.indiewire.com/feed/"
       },
       {
         "name": "The Guardian - Film",
@@ -122,7 +122,7 @@
       },
       {
         "name": "Quanta Magazine (Science & Longform)",
-        "url": "https://api.quantamagazine.org/v1/feed"
+        "url": "https://www.quantamagazine.org/feed/"
       },
       {
         "name": "Aeon (Longform Essays)",
@@ -144,15 +144,15 @@
         "url": "https://www.theguardian.com/food/rss"
       },
       {
-        "name": "BBC Food",
-        "url": "https://feeds.bbci.co.uk/food/rss.xml"
+        "name": "Bon Appétit - Recipes & Cooking",
+        "url": "https://www.bonappetit.com/feed/rss"
       }
     ]
   },
   "positive_news": {
     "label": "Positive & Uplifting News",
     "freshness_hours": 72,
-    "max_items_per_feed": 10,
+    "max_items_per_feed": 8,
     "feeds": [
       {
         "name": "Good News Network",
@@ -171,7 +171,7 @@
   "niche_hobbies": {
     "label": "Niche & Hobbies",
     "freshness_hours": 120,
-    "max_items_per_feed": 8,
+    "max_items_per_feed": 6,
     "feeds": [
       {
         "name": "Jellyfin Server Releases (GitHub)",
@@ -182,8 +182,8 @@
         "url": "https://jellyfin.org/index.xml"
       },
       {
-        "name": "Self-Hosted / LinuxServer.io Blog",
-        "url": "https://www.linuxserver.io/rss.xml"
+        "name": "Self-Hosted Podcast & Homelab",
+        "url": "https://selfhosted.show/rss"
       },
       {
         "name": "Hearthstone News & Patch Notes (HearthPwn)",

@@ -1,0 +1,17 @@
+{
+  "name": "Daybreak — Daily News Dispatch",
+  "short_name": "Daybreak",
+  "description": "Personal AI-curated morning news dispatch across UK, World, Tech, Sports, Culture, and Food.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#09080D",
+  "theme_color": "#FF2A85",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1025,7 +1025,7 @@ def main() -> int:
     root_index.write_text(html_output, encoding="utf-8")
     dist_json.write_text(briefing.model_dump_json(indent=2), encoding="utf-8")
 
-    for asset_name in ("styles.css", "app.js"):
+    for asset_name in ("styles.css", "app.js", "manifest.json", "icon.svg"):
         src_asset = BASE_DIR / asset_name
         if src_asset.exists():
             shutil.copy2(src_asset, DIST_DIR / asset_name)

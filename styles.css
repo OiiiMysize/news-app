@@ -139,6 +139,11 @@
   box-sizing: border-box;
 }
 
+/* Ensure [hidden] attribute always overrides Tailwind .flex / .grid / .inline-flex */
+[hidden] {
+  display: none !important;
+}
+
 body {
   background-color: var(--bg);
   background-image: radial-gradient(80vw 50vw at 50% 0%, var(--glow-a), transparent 65%);

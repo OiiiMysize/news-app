@@ -2,7 +2,7 @@
   "uk_news": {
     "label": "UK News",
     "freshness_hours": 36,
-    "max_items_per_feed": 12,
+    "max_items_per_feed": 10,
     "feeds": [
       {
         "name": "BBC News - UK",
@@ -21,7 +21,7 @@
   "world_news": {
     "label": "World News",
     "freshness_hours": 36,
-    "max_items_per_feed": 12,
+    "max_items_per_feed": 10,
     "feeds": [
       {
         "name": "BBC News - World",
@@ -41,29 +41,52 @@
       }
     ]
   },
-  "tech_ai": {
-    "label": "Technology & AI",
-    "freshness_hours": 36,
-    "max_items_per_feed": 12,
+  "tech": {
+    "label": "Tech",
+    "freshness_hours": 48,
+    "max_items_per_feed": 8,
     "feeds": [
       {
         "name": "Ars Technica",
         "url": "https://feeds.arstechnica.com/arstechnica/index"
       },
       {
-        "name": "Hacker News (Frontpage 100+ pts)",
-        "url": "https://hnrss.org/frontpage?points=100"
-      },
-      {
         "name": "The Verge",
         "url": "https://www.theverge.com/rss/index.xml"
+      },
+      {
+        "name": "Hacker News (Frontpage 100+ pts)",
+        "url": "https://hnrss.org/frontpage?points=100"
       }
     ]
   },
-  "sports": {
-    "label": "Sports",
+  "ai": {
+    "label": "AI",
     "freshness_hours": 48,
-    "max_items_per_feed": 10,
+    "max_items_per_feed": 8,
+    "feeds": [
+      {
+        "name": "The Verge - AI",
+        "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"
+      },
+      {
+        "name": "Ars Technica - AI",
+        "url": "https://arstechnica.com/ai/feed/"
+      },
+      {
+        "name": "MIT Technology Review - AI",
+        "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed"
+      },
+      {
+        "name": "TechCrunch - AI",
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/"
+      }
+    ]
+  },
+  "arsenal": {
+    "label": "Arsenal",
+    "freshness_hours": 72,
+    "max_items_per_feed": 8,
     "feeds": [
       {
         "name": "Arseblog - Arsenal FC News",
@@ -74,9 +97,35 @@
         "url": "https://feeds.bbci.co.uk/sport/football/teams/arsenal/rss.xml"
       },
       {
+        "name": "The Guardian - Arsenal",
+        "url": "https://www.theguardian.com/football/arsenal/rss"
+      }
+    ]
+  },
+  "football": {
+    "label": "Football",
+    "freshness_hours": 48,
+    "max_items_per_feed": 8,
+    "feeds": [
+      {
         "name": "BBC Sport - Premier League",
         "url": "https://feeds.bbci.co.uk/sport/football/premier-league/rss.xml"
       },
+      {
+        "name": "BBC Sport - Football",
+        "url": "https://feeds.bbci.co.uk/sport/football/rss.xml"
+      },
+      {
+        "name": "The Guardian - Football",
+        "url": "https://www.theguardian.com/football/rss"
+      }
+    ]
+  },
+  "f1": {
+    "label": "F1",
+    "freshness_hours": 72,
+    "max_items_per_feed": 8,
+    "feeds": [
       {
         "name": "BBC Sport - Formula 1",
         "url": "https://feeds.bbci.co.uk/sport/formula1/rss.xml"
@@ -86,17 +135,36 @@
         "url": "https://www.autosport.com/rss/f1/news/"
       },
       {
-        "name": "BBC Sport - Top Stories (Wider Sports)",
+        "name": "The Guardian - Formula 1",
+        "url": "https://www.theguardian.com/sport/formulaone/rss"
+      },
+      {
+        "name": "Motorsport.com - Formula 1",
+        "url": "https://www.motorsport.com/rss/f1/news/"
+      }
+    ]
+  },
+  "sport": {
+    "label": "Sport",
+    "freshness_hours": 48,
+    "max_items_per_feed": 8,
+    "feeds": [
+      {
+        "name": "BBC Sport - Top Stories",
         "url": "https://feeds.bbci.co.uk/sport/rss.xml"
       },
       {
-        "name": "The Guardian - Sport (Wider Sports)",
+        "name": "The Guardian - Sport",
         "url": "https://www.theguardian.com/uk/sport/rss"
+      },
+      {
+        "name": "Sky Sports - News",
+        "url": "https://www.skysports.com/rss/12040"
       }
     ]
   },
   "entertainment": {
-    "label": "Entertainment & Culture",
+    "label": "Culture",
     "freshness_hours": 72,
     "max_items_per_feed": 8,
     "feeds": [
@@ -131,7 +199,7 @@
     ]
   },
   "food": {
-    "label": "Food & Culinary",
+    "label": "Food",
     "freshness_hours": 96,
     "max_items_per_feed": 8,
     "feeds": [
@@ -151,20 +219,20 @@
   },
   "positive_news": {
     "label": "Positive & Uplifting News",
-    "freshness_hours": 72,
+    "freshness_hours": 96,
     "max_items_per_feed": 8,
     "feeds": [
-      {
-        "name": "Good News Network",
-        "url": "https://www.goodnewsnetwork.org/feed/"
-      },
       {
         "name": "Positive News UK",
         "url": "https://www.positive.news/feed/"
       },
       {
-        "name": "BBC News - Uplifting Stories",
-        "url": "https://feeds.bbci.co.uk/news/topics/cx1m7zg0gzdt/rss.xml"
+        "name": "Good News Network",
+        "url": "https://www.goodnewsnetwork.org/feed/"
+      },
+      {
+        "name": "The Optimist Daily",
+        "url": "https://www.optimistdaily.com/feed/"
       }
     ]
   },

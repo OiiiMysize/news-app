@@ -93,6 +93,12 @@
     return null;
   }
 
+  function setElementHidden(el, isHidden) {
+    if (!el) return;
+    el.hidden = Boolean(isHidden);
+    el.classList.toggle('hidden', Boolean(isHidden));
+  }
+
   function updateSavedUIState() {
     const savedList = getSavedArticles();
     const savedUrls = new Set(savedList.map((s) => s.source_url));
@@ -100,11 +106,11 @@
     // Update badge in bottom morphing nav
     if (savedCountBadge) {
       savedCountBadge.textContent = String(savedList.length);
-      savedCountBadge.hidden = savedList.length === 0;
+      setElementHidden(savedCountBadge, savedList.length === 0);
     }
 
     if (clearSavedBtn) {
-      clearSavedBtn.hidden = savedList.length === 0;
+      setElementHidden(clearSavedBtn, savedList.length === 0);
     }
 
     // Sync all bookmark buttons in the DOM
@@ -139,13 +145,13 @@
     savedGrid.innerHTML = '';
 
     if (savedList.length === 0) {
-      savedEmptyState.hidden = false;
-      savedGrid.hidden = true;
+      setElementHidden(savedEmptyState, false);
+      setElementHidden(savedGrid, true);
       return;
     }
 
-    savedEmptyState.hidden = true;
-    savedGrid.hidden = false;
+    setElementHidden(savedEmptyState, true);
+    setElementHidden(savedGrid, false);
 
     savedList.forEach((story) => {
       const article = document.createElement('article');
@@ -329,61 +335,61 @@
     );
 
     if (selectedCategory === 'saved') {
-      if (uplifterSection) uplifterSection.hidden = true;
-      if (mondaySection) mondaySection.hidden = true;
-      if (topSection) topSection.hidden = true;
-      if (curatedSection) curatedSection.hidden = true;
+      setElementHidden(uplifterSection, true);
+      setElementHidden(mondaySection, true);
+      setElementHidden(topSection, true);
+      setElementHidden(curatedSection, true);
       if (savedSection) {
-        savedSection.hidden = false;
+        setElementHidden(savedSection, false);
         renderSavedSection();
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    if (savedSection) savedSection.hidden = true;
-    if (curatedSection) curatedSection.hidden = false;
+    setElementHidden(savedSection, true);
 
     // Show Daily Uplifter on "All", hide when drilling into a specific topic so mobile screen focuses on topic
-    if (uplifterSection) {
-      uplifterSection.hidden = selectedCategory !== 'all';
-    }
+    setElementHidden(uplifterSection, selectedCategory !== 'all');
 
     let visibleTopCount = 0;
+    let visibleCuratedCount = 0;
     let visibleTotalCount = 0;
 
     storyCards.forEach((card) => {
-      const cardCat = card.getAttribute('data-category');
+      const cardCat = (card.getAttribute('data-category') || '').trim();
       const shouldShow = selectedCategory === 'all' || cardCat === selectedCategory;
-      card.hidden = !shouldShow;
+      setElementHidden(card, !shouldShow);
       if (shouldShow) {
         visibleTotalCount += 1;
         if (topSection && topSection.contains(card)) {
           visibleTopCount += 1;
+        } else {
+          visibleCuratedCount += 1;
         }
       }
     });
 
-    if (topSection) {
-      topSection.hidden = visibleTopCount === 0;
-    }
+    setElementHidden(topSection, visibleTopCount === 0);
+    setElementHidden(curatedSection, visibleCuratedCount === 0);
 
-    if (mondaySection) {
-      mondaySection.hidden = !(
-        selectedCategory === 'all' || selectedCategory === 'entertainment'
-      );
-    }
+    setElementHidden(
+      mondaySection,
+      !(selectedCategory === 'all' || selectedCategory === 'entertainment')
+    );
 
     if (visibleCountLabel) {
       const activeBtn = nav
         ? nav.querySelector(`.c09-bnav__btn[data-filter="${selectedCategory}"] .c09-bnav__label`)
         : null;
-      const labelText = activeBtn ? activeBtn.textContent : 'All';
+      const labelText = activeBtn ? activeBtn.textContent.trim() : 'All';
       visibleCountLabel.textContent =
         selectedCategory === 'all'
           ? `All Dispatches (${visibleTotalCount})`
           : `${labelText} (${visibleTotalCount})`;
     }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   navBtns.forEach((btn) => {

@@ -75,13 +75,31 @@ NOISE_REGEX = re.compile("|".join(NOISE_PATTERNS), re.IGNORECASE)
 CATEGORY_FALLBACK_IMAGES: Dict[str, str] = {
     "uk_news": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=900&q=80",
     "world_news": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=900&q=80",
-    "tech_ai": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80",
-    "sports": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=80",
+    "tech": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80",
+    "ai": "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=900&q=80",
+    "arsenal": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=80",
+    "football": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=900&q=80",
+    "f1": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=900&q=80",
+    "sport": "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=900&q=80",
     "entertainment": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80",
     "food": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80",
     "positive_news": "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=900&q=80",
     "niche_hobbies": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=900&q=80",
 }
+
+CATEGORY_QUOTAS: List[tuple[str, str, int]] = [
+    ("uk_news", "UK News", 5),
+    ("world_news", "World News", 5),
+    ("tech", "Tech", 3),
+    ("ai", "AI", 3),
+    ("arsenal", "Arsenal", 3),
+    ("football", "Football", 3),
+    ("f1", "F1", 3),
+    ("sport", "Sport", 3),
+    ("entertainment", "Culture", 3),
+    ("food", "Food", 2),
+    ("niche_hobbies", "Niche", 1),
+]
 
 
 # ---------------------------------------------------------------------------
@@ -91,8 +109,12 @@ CATEGORY_FALLBACK_IMAGES: Dict[str, str] = {
 CategoryKey = Literal[
     "uk_news",
     "world_news",
-    "tech_ai",
-    "sports",
+    "tech",
+    "ai",
+    "arsenal",
+    "football",
+    "f1",
+    "sport",
     "entertainment",
     "food",
     "niche_hobbies",
@@ -559,7 +581,7 @@ def fetch_all_feeds(feeds_config: Dict[str, Any]) -> Dict[str, List[Dict[str, An
 
 def compact_candidates_for_prompt(
     categorized_items: Dict[str, List[Dict[str, Any]]],
-    max_per_category: int = 14,
+    max_per_category: int = 10,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """
     Keep the prompt payload fast and compact by selecting the highest-priority
@@ -568,9 +590,8 @@ def compact_candidates_for_prompt(
     """
     compacted: Dict[str, List[Dict[str, Any]]] = {}
     for cat_key, items in categorized_items.items():
-        # Sort by feed_rank (1 = lead story of a feed) so all feeds in a category get fair representation
         sorted_items = sorted(items, key=lambda x: (x.get("feed_rank", 99), x.get("published_utc", "")))
-        cap = 18 if cat_key == "sports" else max_per_category
+        cap = 12 if cat_key in ("uk_news", "world_news") else max_per_category
         slim_list = []
         for it in sorted_items[:cap]:
             slim_list.append(
@@ -578,7 +599,7 @@ def compact_candidates_for_prompt(
                     "source_name": it["source_name"],
                     "feed_rank": it["feed_rank"],
                     "title": it["title"],
-                    "summary": (it.get("summary") or "")[:280],
+                    "summary": (it.get("summary") or "")[:240],
                     "url": it["url"],
                     "estimated_read_mins": it.get("estimated_read_mins", 3),
                 }
@@ -608,35 +629,82 @@ def build_gemini_prompt(
     prompt = f"""You are the Chief Editor of **Daybreak**, a personal daily news dispatch for a reader based in the UK.
 Today is **{day_of_week}, {date_str}**.
 
-Below is a JSON object containing fresh RSS feed entries grouped by category (`uk_news`, `world_news`, `tech_ai`, `sports`, `entertainment`, `food`, `positive_news`, `niche_hobbies`). Each item includes `feed_rank` (its front-page priority in that publication), `source_name`, `title`, `summary`, `url`, and `estimated_read_mins`.
+Below is a JSON object containing fresh RSS feed entries grouped by category (`uk_news`, `world_news`, `tech`, `ai`, `arsenal`, `football`, `f1`, `sport`, `entertainment`, `food`, `positive_news`, `niche_hobbies`). Each item includes `feed_rank` (its front-page priority in that publication), `source_name`, `title`, `summary`, `url`, and `estimated_read_mins`.
 
 ### 1. EDITORIAL SELECTION & DEDUPLICATION RULES
-- **Cross-Source Consensus (#1 Signal):** When multiple feeds cover the same story (e.g., BBC, The Guardian, and Sky News reporting on the same UK event, or Ars Technica and The Verge covering the same AI release), treat that overlap as the strongest indicator of importance. Deduplicate them into a **single** story, select the best primary URL, and list the other outlets in `corroborating_sources`.
-- **Editorial Rank & Impact:** Prioritize stories with low `feed_rank` (front-page leads) and high civic, economic, scientific, or cultural weight. Skip clickbait, minor local crime, celebrity gossip, or repetitive opinion pieces.
-- **Topic Diversity:** Ensure stories within a category cover distinct topics rather than multiple angles of the exact same event.
+- **Cross-Source Consensus (#1 Signal):** When multiple feeds cover the same story, treat that overlap as the strongest indicator of importance. Deduplicate them into a **single** story, select the best primary URL, and list the other outlets in `corroborating_sources`.
+- **Editorial Rank & Impact:** Prioritize stories with low `feed_rank` (front-page leads) and high civic, economic, scientific, sporting, or cultural weight. Skip clickbait, minor local crime, celebrity gossip, or repetitive opinion pieces.
+- **No Overlap Between Arsenal, Football, F1 & Sport:** Keep Arsenal FC stories in `arsenal`, non-Arsenal Premier League/European football stories in `football`, Formula 1 in `f1`, and wider sports (rugby, cricket, tennis, golf, boxing, athletics, etc.) in `sport`.
 - **URL Integrity:** You MUST use the exact `url` and `source_name` provided in the candidate feed items. Never invent URLs. Leave `image_url` as null (images are attached automatically after curation).
 
 ### 2. STRICT CATEGORY QUOTAS
 Across `top_stories` and `stories` combined, enforce the following exact category quotas:
-- **UK News (`uk_news`):** **3 stories**
-- **World News (`world_news`):** **2 stories**
-- **Technology & AI (`tech_ai`):** **3 stories**
-- **Sports (`sports`):** **3 to 4 stories total**, explicitly split out using the `subcategory` field in this priority order:
-  1. `Football • Arsenal FC` / `Football • Premier League` (1–2 stories): **Arsenal FC news** (via Arseblog / BBC Arsenal) and major **Premier League** news take top precedence.
-  2. `Formula 1` (1 story): Biggest F1 headline of the day.
-  3. `Wider Sports` (1 story): Biggest headline across wider sports (cricket, rugby, tennis, golf, boxing, athletics, etc.).
-- **Entertainment & Culture (`entertainment`):** **2 stories** (covering Film/TV, video games, or longform/science).
-- **Food (`food`):** **1 story** (a standout recipe, culinary technique, or food science piece).
-- **Niche & Hobbies (`niche_hobbies`):** **0 to 2 stories** — Include **ONLY** if the news is genuinely significant (e.g., a new Jellyfin or major self-hosted release, a major Hearthstone or Marvel Snap patch/OTA balance update, or a major QSR/restaurant tech innovation). If nothing significant occurred in `niche_hobbies`, include 0 stories from it.
-- **The Daily Uplifter (`daily_uplifter`):** **1 mandatory story** placed in the dedicated `daily_uplifter` top-level object (sourced from `positive_news` or an uplifting science/community item).
+- **UK News (`uk_news`, label `"UK News"`):** **5 stories**
+- **World News (`world_news`, label `"World News"`):** **5 stories**
+- **Tech (`tech`, label `"Tech"`):** **3 stories** (general technology, hardware, software, cybersecurity, developer news)
+- **AI (`ai`, label `"AI"`):** **3 stories** (artificial intelligence, LLMs, machine learning, AI policy/products)
+- **Arsenal (`arsenal`, label `"Arsenal"`):** **3 stories** (Arsenal FC news, match reports, press conferences, analysis)
+- **Football (`football`, label `"Football"`):** **3 stories** (Premier League & wider football news)
+- **Formula 1 (`f1`, label `"F1"`):** **3 stories** (Formula 1 headlines)
+- **Wider Sport (`sport`, label `"Sport"`):** **3 stories** (rugby, cricket, tennis, golf, boxing, cycling, athletics, etc.)
+- **Culture (`entertainment`, label `"Culture"`):** **3 stories** (Film/TV, video games, or science/longform)
+- **Food (`food`, label `"Food"`):** **2 stories** (recipes, restaurant reviews, culinary technique)
+- **Niche & Hobbies (`niche_hobbies`, label `"Niche"`):** **1 to 2 stories** (Jellyfin/self-hosting, Hearthstone/Marvel Snap patches, or QSR/restaurant tech)
+- **The Daily Uplifter (`daily_uplifter`):** **1 mandatory story** placed in `daily_uplifter` (sourced from `positive_news`).
 
 ### 3. STORY FORMATS & DEPTH
-- **Top Stories (`top_stories`):** Select the **2 to 3 biggest stories overall** from the quotas above and place them in `top_stories` (do NOT duplicate them in `stories`; they count toward their category's quota). For each top story, write **1 to 2 rich narrative paragraphs** in `narrative_paragraphs`.
+- **Top Stories (`top_stories`):** Select the **3 biggest stories overall** (e.g., 1 UK lead, 1 World lead, 1 Tech/AI/Arsenal lead) and place them in `top_stories` (do NOT duplicate them in `stories`; they count toward their category's quota). For each top story, write **2 rich narrative paragraphs** in `narrative_paragraphs`.
 - **Standard Stories (`stories`):** Place all remaining quota stories in `stories`. For each, write **2 concise, high-signal bullet points** in `bullet_points`.
-- **'Tell Me More' Drawer (`detailed_context`):** For **every** story (including `daily_uplifter`, `top_stories`, and `stories`), provide **3 to 4 analytical bullet points** in `detailed_context` explaining background context, key figures/stats, why it matters, or what happens next.
+- **'Tell Me More' Drawer (`detailed_context`):** For **every** story, provide **3 analytical bullet points** in `detailed_context` explaining background context, key figures/stats, or what happens next.
 
 ### 4. MONDAY SPECIAL RULE
 - {monday_instruction}
+
+### 5. REQUIRED JSON OUTPUT FORMAT
+Return ONLY a valid JSON object matching this exact structure (no markdown code fences):
+{{
+  "edition_tagline": "string",
+  "daily_uplifter": {{
+    "title": "string",
+    "summary": "string",
+    "detailed_context": ["point 1", "point 2", "point 3"],
+    "source_name": "string",
+    "source_url": "string",
+    "image_url": null,
+    "reading_time_minutes": 3
+  }},
+  "top_stories": [
+    {{
+      "title": "string",
+      "category": "uk_news|world_news|tech|ai|arsenal|football|f1|sport|entertainment|food|niche_hobbies",
+      "category_label": "string",
+      "subcategory": null,
+      "narrative_paragraphs": ["paragraph 1", "paragraph 2"],
+      "detailed_context": ["point 1", "point 2", "point 3"],
+      "source_name": "string",
+      "source_url": "string",
+      "image_url": null,
+      "corroborating_sources": [],
+      "reading_time_minutes": 4
+    }}
+  ],
+  "stories": [
+    {{
+      "title": "string",
+      "category": "uk_news|world_news|tech|ai|arsenal|football|f1|sport|entertainment|food|niche_hobbies",
+      "category_label": "string",
+      "subcategory": null,
+      "bullet_points": ["bullet 1", "bullet 2"],
+      "detailed_context": ["point 1", "point 2", "point 3"],
+      "source_name": "string",
+      "source_url": "string",
+      "image_url": null,
+      "corroborating_sources": [],
+      "reading_time_minutes": 3
+    }}
+  ],
+  "monday_releases": null
+}}
 
 ### CANDIDATE RSS ITEMS BY CATEGORY:
 {json.dumps(compact_items, ensure_ascii=False, separators=(",", ":"))}
@@ -649,7 +717,7 @@ def curate_with_gemini(
     day_of_week: str,
     date_str: str,
 ) -> DailyBriefing:
-    """Call Gemini 3.8 Flash via the Interactions API with Structured Output and strict timeout."""
+    """Call Gemini 3.8 Flash via the Interactions API with JSON output and strict timeout."""
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError(
@@ -669,21 +737,20 @@ def curate_with_gemini(
 
     def _invoke_gemini() -> None:
         try:
-            client = genai.Client(api_key=api_key, http_options={"timeout": 45000})
+            client = genai.Client(api_key=api_key, http_options={"timeout": 85000})
             interaction = client.interactions.create(
                 model=MODEL_ID,
                 system_instruction=(
                     "You are a precise, insightful UK news editor. Always return valid JSON "
-                    "matching the provided schema and strictly use real URLs from the input feed data."
+                    "matching the requested structure and strictly use real URLs from the input feed data."
                 ),
                 input=prompt,
                 generation_config={"thinking_level": "low"},
                 response_format={
                     "type": "text",
                     "mime_type": "application/json",
-                    "schema": DailyBriefing.model_json_schema(),
                 },
-                timeout=45.0,
+                timeout=85.0,
             )
             result_holder["output_text"] = interaction.output_text or ""
         except Exception as exc:
@@ -692,14 +759,18 @@ def curate_with_gemini(
     # Use a daemon thread so a hung socket can never block process exit
     worker = threading.Thread(target=_invoke_gemini, daemon=True)
     worker.start()
-    worker.join(timeout=50.0)
+    worker.join(timeout=90.0)
 
     if worker.is_alive():
-        raise RuntimeError("Gemini API call timed out after 50 seconds.")
+        raise RuntimeError("Gemini API call timed out after 90 seconds.")
     if "error" in result_holder:
         raise result_holder["error"]
 
-    output_text = result_holder.get("output_text", "")
+    output_text = (result_holder.get("output_text") or "").strip()
+    if output_text.startswith("```"):
+        output_text = re.sub(r"^```(?:json)?\s*", "", output_text)
+        output_text = re.sub(r"\s*```$", "", output_text)
+
     if not output_text:
         raise RuntimeError("Gemini returned an empty response.")
 
@@ -713,59 +784,125 @@ def curate_with_gemini(
 
 
 # ---------------------------------------------------------------------------
-# Deterministic RSS Fallback (for local preview when GEMINI_API_KEY is unset)
+# Quota Backfill & Deterministic RSS Fallback
 # ---------------------------------------------------------------------------
+
+def _make_bullets_from_rss(summary: str, title: str, source_name: str) -> List[str]:
+    cleaned = re.sub(r"\[…\]|\[\.\.\.\]", "", summary or "").strip()
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", cleaned) if len(s.strip()) > 25]
+    if len(sentences) >= 2:
+        return [sentences[0], sentences[1]]
+    if len(sentences) == 1:
+        return [sentences[0], f"Reported by {source_name} — tap the headline to read the full dispatch."]
+    return [
+        f"Latest coverage from {source_name}: {title}.",
+        "Tap through to the source article for full reporting and updates.",
+    ]
+
+
+def _make_context_from_rss(item: Dict[str, Any], cat_label: str) -> List[str]:
+    bullets = [
+        f"Source publication: {item['source_name']} ({cat_label}).",
+        f"Published: {item['published_utc']} (Feed priority rank #{item['feed_rank']}).",
+    ]
+    cleaned = re.sub(r"\[…\]|\[\.\.\.\]", "", item.get("summary") or "").strip()
+    if cleaned and len(cleaned) > 40:
+        bullets.append(f"Key detail: {cleaned[:240]}")
+    bullets.append(f"Estimated full article reading time: ~{item.get('estimated_read_mins', 3)} minutes.")
+    return bullets
+
+
+def enforce_category_quotas(
+    briefing: DailyBriefing,
+    categorized_items: Dict[str, List[Dict[str, Any]]],
+) -> None:
+    """
+    Guarantee every category meets its minimum story quota (e.g. 5 UK, 5 World,
+    3 Tech, 3 AI, 3 Arsenal, 3 Football, 3 F1, 3 Sport, 3 Culture, 2 Food, 1 Niche)
+    by topping up any shortfall from live RSS candidates.
+    """
+    used_urls = {briefing.daily_uplifter.source_url.strip()}
+    used_title_norms = {re.sub(r"\W+", "", briefing.daily_uplifter.title.lower())[:38]}
+
+    counts: Dict[str, int] = {k: 0 for k, _, _ in CATEGORY_QUOTAS}
+    for ts in briefing.top_stories:
+        counts[ts.category] = counts.get(ts.category, 0) + 1
+        used_urls.add(ts.source_url.strip())
+        used_title_norms.add(re.sub(r"\W+", "", ts.title.lower())[:38])
+    for st in briefing.stories:
+        counts[st.category] = counts.get(st.category, 0) + 1
+        used_urls.add(st.source_url.strip())
+        used_title_norms.add(re.sub(r"\W+", "", st.title.lower())[:38])
+
+    for cat_key, cat_label, target_quota in CATEGORY_QUOTAS:
+        current = counts.get(cat_key, 0)
+        if current >= target_quota:
+            continue
+
+        needed = target_quota - current
+        candidates = sorted(
+            categorized_items.get(cat_key, []),
+            key=lambda x: (x.get("feed_rank", 99), x.get("published_utc", "")),
+        )
+        added = 0
+        for it in candidates:
+            if added >= needed:
+                break
+            url_str = it["url"].strip()
+            norm_title = re.sub(r"\W+", "", it["title"].lower())[:38]
+            if url_str in used_urls or norm_title in used_title_norms:
+                continue
+            # For general 'football' or 'sport', avoid duplicating Arsenal or F1 stories
+            title_lower = it["title"].lower()
+            if cat_key == "football" and "arsenal" in title_lower:
+                continue
+            if cat_key == "sport" and (
+                "arsenal" in title_lower
+                or "premier league" in title_lower
+                or "formula 1" in title_lower
+                or "f1" in title_lower
+            ):
+                continue
+
+            used_urls.add(url_str)
+            used_title_norms.add(norm_title)
+            briefing.stories.append(
+                CuratedStory(
+                    title=it["title"],
+                    category=cat_key,  # type: ignore[arg-type]
+                    category_label=cat_label,
+                    subcategory=None,
+                    bullet_points=_make_bullets_from_rss(it.get("summary", ""), it["title"], it["source_name"]),
+                    detailed_context=_make_context_from_rss(it, cat_label),
+                    source_name=it["source_name"],
+                    source_url=url_str,
+                    image_url=it.get("image_url"),
+                    corroborating_sources=[],
+                    reading_time_minutes=it.get("estimated_read_mins", 3),
+                )
+            )
+            added += 1
+
 
 def build_fallback_briefing(
     categorized_items: Dict[str, List[Dict[str, Any]]],
     day_of_week: str,
     date_str: str,
 ) -> DailyBriefing:
-    """Build a structured DailyBriefing directly from live fetched RSS items."""
-    logger.info("Building fallback briefing from live RSS items (day=%s)...", day_of_week)
+    """Build a full-quota structured DailyBriefing directly from live fetched RSS items."""
+    logger.info("Building full-quota briefing from live RSS items (day=%s)...", day_of_week)
 
-    def pick_items(cat: str, count: int) -> List[Dict[str, Any]]:
-        items = categorized_items.get(cat, [])
-        seen_titles = set()
-        picked = []
-        for it in items:
-            norm = re.sub(r"\W+", "", it["title"].lower())[:40]
-            if norm in seen_titles:
-                continue
-            seen_titles.add(norm)
-            picked.append(it)
-            if len(picked) >= count:
-                break
-        return picked
-
-    def make_bullets(summary: str, title: str) -> List[str]:
-        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", summary) if len(s.strip()) > 20]
-        if len(sentences) >= 2:
-            return sentences[:2]
-        if len(sentences) == 1:
-            return [sentences[0], f"Full coverage and updates available via {title[:50]}…"]
-        return [
-            f"Key developments reported regarding: {title}.",
-            "Read the original source report for full details and live updates.",
-        ]
-
-    def make_context(item: Dict[str, Any], cat_label: str) -> List[str]:
-        bullets = [
-            f"Source publication: {item['source_name']} ({cat_label}).",
-            f"Published timestamp: {item['published_utc']} (Front-page feed rank #{item['feed_rank']}).",
-        ]
-        if item.get("summary"):
-            bullets.append(f"Summary detail: {item['summary'][:220]}")
-        bullets.append(f"Estimated full article reading time: ~{item.get('estimated_read_mins', 3)} minutes.")
-        return bullets
-
-    pos_items = pick_items("positive_news", 1)
+    pos_items = sorted(
+        categorized_items.get("positive_news", []),
+        key=lambda x: (x.get("feed_rank", 99), x.get("published_utc", "")),
+    )
     if pos_items:
         u = pos_items[0]
         uplifter = UplifterStory(
             title=u["title"],
-            summary=u["summary"] or f"An uplifting spotlight from {u['source_name']}: {u['title']}",
-            detailed_context=make_context(u, "Positive News"),
+            summary=re.sub(r"\[…\]|\[\.\.\.\]", "", u.get("summary") or "").strip()
+            or f"An uplifting spotlight from {u['source_name']}: {u['title']}",
+            detailed_context=_make_context_from_rss(u, "Positive News"),
             source_name=u["source_name"],
             source_url=u["url"],
             image_url=u.get("image_url"),
@@ -786,57 +923,29 @@ def build_fallback_briefing(
             reading_time_minutes=3,
         )
 
-    uk_picks = pick_items("uk_news", 3)
-    world_picks = pick_items("world_news", 2)
-    tech_picks = pick_items("tech_ai", 3)
-    ent_picks = pick_items("entertainment", 2)
-    food_picks = pick_items("food", 1)
-    niche_picks = pick_items("niche_hobbies", 1)
-
-    all_sports = categorized_items.get("sports", [])
-    football_items = [
-        i for i in all_sports
-        if "arseblog" in i["source_name"].lower()
-        or "arsenal" in i["source_name"].lower()
-        or "premier league" in i["source_name"].lower()
-    ]
-    f1_items = [
-        i for i in all_sports
-        if "formula 1" in i["source_name"].lower() or "autosport" in i["source_name"].lower()
-    ]
-    wider_items = [
-        i for i in all_sports
-        if "wider sports" in i["source_name"].lower()
-        and "arsenal" not in i["title"].lower()
-        and "premier league" not in i["title"].lower()
-        and "f1" not in i["title"].lower()
-    ]
-
     top_stories: List[TopStory] = []
-    stories: List[CuratedStory] = []
-
-    promoted = [
-        (uk_picks[0], "uk_news", "UK News", None) if uk_picks else None,
-        (world_picks[0], "world_news", "World News", None) if world_picks else None,
-        (tech_picks[0], "tech_ai", "Tech & AI", None) if tech_picks else None,
-    ]
-    for entry in promoted:
-        if not entry:
+    for lead_cat, lead_label in [("uk_news", "UK News"), ("world_news", "World News"), ("ai", "AI")]:
+        cat_candidates = sorted(
+            categorized_items.get(lead_cat, []),
+            key=lambda x: (x.get("feed_rank", 99), x.get("published_utc", "")),
+        )
+        if not cat_candidates:
             continue
-        item, cat_key, cat_label, subcat = entry
-        p1 = item["summary"] if item["summary"] else f"{item['source_name']} leads with coverage of {item['title']}."
+        item = cat_candidates[0]
+        cleaned_sum = re.sub(r"\[…\]|\[\.\.\.\]", "", item.get("summary") or "").strip()
+        p1 = cleaned_sum if cleaned_sum else f"{item['source_name']} leads with coverage of {item['title']}."
         p2 = (
-            f"This developing {cat_label} lead was ranked #{item['feed_rank']} on {item['source_name']} "
-            f"({item['published_utc']}). Tap through to the source article for full reporting and analysis."
+            f"This {lead_label} lead story was ranked #{item['feed_rank']} on {item['source_name']} "
+            f"({item['published_utc']}). Tap the headline to read the full report."
         )
         top_stories.append(
             TopStory(
                 title=item["title"],
-                category=cat_key,  # type: ignore[arg-type]
-                category_label=cat_label,
-                subcategory=subcat,
+                category=lead_cat,  # type: ignore[arg-type]
+                category_label=lead_label,
+                subcategory=None,
                 narrative_paragraphs=[p1, p2],
-                detailed_context=make_context(item, cat_label),
+                detailed_context=_make_context_from_rss(item, lead_label),
                 source_name=item["source_name"],
                 source_url=item["url"],
                 image_url=item.get("image_url"),
@@ -844,39 +953,6 @@ def build_fallback_briefing(
                 reading_time_minutes=item.get("estimated_read_mins", 4),
             )
         )
-
-    def add_curated(
-        items_list: List[Dict[str, Any]],
-        cat_key: CategoryKey,
-        cat_label: str,
-        subcat: Optional[str] = None,
-    ) -> None:
-        for it in items_list:
-            stories.append(
-                CuratedStory(
-                    title=it["title"],
-                    category=cat_key,
-                    category_label=cat_label,
-                    subcategory=subcat,
-                    bullet_points=make_bullets(it["summary"], it["title"]),
-                    detailed_context=make_context(it, f"{cat_label}" + (f" • {subcat}" if subcat else "")),
-                    source_name=it["source_name"],
-                    source_url=it["url"],
-                    image_url=it.get("image_url"),
-                    corroborating_sources=[],
-                    reading_time_minutes=it.get("estimated_read_mins", 3),
-                )
-            )
-
-    add_curated(uk_picks[1:], "uk_news", "UK News")
-    add_curated(world_picks[1:], "world_news", "World News")
-    add_curated(tech_picks[1:], "tech_ai", "Tech & AI")
-    add_curated(football_items[:2], "sports", "Sports", "Football")
-    add_curated(f1_items[:1], "sports", "Sports", "Formula 1")
-    add_curated(wider_items[:1], "sports", "Sports", "Wider Sports")
-    add_curated(ent_picks, "entertainment", "Culture")
-    add_curated(food_picks, "food", "Food")
-    add_curated(niche_picks, "niche_hobbies", "Niche", "Tech / Hobby Radar")
 
     monday_releases = None
     if day_of_week.strip().lower() == "monday":
@@ -896,7 +972,8 @@ def build_fallback_briefing(
                     title=it["title"],
                     medium=medium,
                     release_details=f"Featured this week via {it['source_name']}",
-                    why_it_matters=it["summary"][:180] or "Highlighted release and cultural pick for the week ahead.",
+                    why_it_matters=re.sub(r"\[…\]|\[\.\.\.\]", "", it.get("summary") or "")[:180]
+                    or "Highlighted release and cultural pick for the week ahead.",
                     source_name=it["source_name"],
                     source_url=it["url"],
                     image_url=it.get("image_url"),
@@ -908,13 +985,15 @@ def build_fallback_briefing(
                 items=rel_items,
             )
 
-    return DailyBriefing(
-        edition_tagline=f"Your {day_of_week} dispatch across UK, World, Tech, Arsenal & F1, Culture, and Food.",
+    briefing = DailyBriefing(
+        edition_tagline=f"Your {day_of_week} dispatch across UK, World, Tech, AI, Arsenal, Football, F1, Sport, Culture & Food.",
         daily_uplifter=uplifter,
         top_stories=top_stories,
-        stories=stories,
+        stories=[],
         monday_releases=monday_releases,
     )
+    enforce_category_quotas(briefing, categorized_items)
+    return briefing
 
 
 # ---------------------------------------------------------------------------
@@ -967,8 +1046,12 @@ def render_dashboard(
         {"key": "all", "label": "All", "count": len(briefing.top_stories) + len(briefing.stories)},
         {"key": "uk_news", "label": "UK", "count": 0},
         {"key": "world_news", "label": "World", "count": 0},
-        {"key": "tech_ai", "label": "Tech", "count": 0},
-        {"key": "sports", "label": "Sports", "count": 0},
+        {"key": "tech", "label": "Tech", "count": 0},
+        {"key": "ai", "label": "AI", "count": 0},
+        {"key": "arsenal", "label": "Arsenal", "count": 0},
+        {"key": "football", "label": "Football", "count": 0},
+        {"key": "f1", "label": "F1", "count": 0},
+        {"key": "sport", "label": "Sport", "count": 0},
         {"key": "entertainment", "label": "Culture", "count": 0},
         {"key": "food", "label": "Food", "count": 0},
         {"key": "niche_hobbies", "label": "Niche", "count": 0},
@@ -1049,6 +1132,7 @@ def main() -> int:
     # 2. Curate via Gemini (or fallback if requested)
     try:
         briefing = curate_with_gemini(categorized_items, day_of_week, date_display)
+        enforce_category_quotas(briefing, categorized_items)
     except Exception as exc:
         if args.fallback:
             logger.warning("Gemini curation unavailable (%s); using --fallback mode.", exc)

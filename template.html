@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- MANDATORY: Declare support for both light and dark themes -->
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    try {
+      document.querySelector('meta[name="color-scheme"]').content =
+        localStorage.getItem("color-scheme") ?? "light dark";
+    } catch (e) {}
+  </script>
+  <title>Daybreak — {{ day_of_week }}, {{ date_display }}</title>
+
+  <!-- Google Fonts: Newsreader (Editorial Serif), Inter (UI Sans), JetBrains Mono (Metadata) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="min-h-screen antialiased selection:bg-pink-500/20">
+
+  <!-- Compact Mobile-First Header -->
+  <header class="border-b" style="border-color: var(--border-soft);">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-3 pb-2.5 flex items-center justify-between gap-2 text-[11px] sm:text-xs font-mono" style="color: var(--text-secondary);">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="inline-flex items-center gap-1.5 font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full elevated-surface" style="color: var(--text-primary);">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          {{ day_of_week }}
+        </span>
+        <span>{{ date_display }}</span>
+      </div>
+
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Total Reading Time Badge -->
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md elevated-surface" title="Estimated time to read this briefing">
+          <svg class="w-3.5 h-3.5 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span><strong>{{ briefing_read_mins }}m</strong> read</span>
+        </span>
+
+        <!-- Expand / Collapse All Drawers -->
+        <button
+          id="toggle-all-drawers"
+          type="button"
+          class="px-2 py-1 rounded-md elevated-surface hover:opacity-80 transition font-sans font-medium text-[11px] sm:text-xs"
+          style="color: var(--text-primary);"
+        >
+          Expand Context
+        </button>
+
+        <!-- Theme Toggle Button -->
+        <button
+          id="theme-toggle"
+          type="button"
+          class="inline-flex items-center gap-1 px-2 py-1 rounded-md elevated-surface hover:opacity-80 transition font-sans font-medium text-[11px] sm:text-xs"
+          style="color: var(--text-primary);"
+          aria-label="Toggle color theme"
+          title="Switch between light and dark theme"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <span id="theme-toggle-label">Theme</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Masthead -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-6">
+        <div class="flex items-baseline gap-3">
+          <h1 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight">
+            Daybreak
+          </h1>
+          <span class="text-xs font-mono uppercase tracking-widest brand-gradient-text font-semibold">
+            {{ generated_at_uk }}
+          </span>
+        </div>
+        <p class="text-xs sm:text-sm max-w-xl leading-relaxed" style="color: var(--text-secondary);">
+          {{ briefing.edition_tagline }}
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-8">
+
+    <!-- 1. THE DAILY UPLIFTER (Dedicated Top Highlight Card with LCP Image) -->
+    {% set uplifter_json = {
+      "source_url": briefing.daily_uplifter.source_url,
+      "title": briefing.daily_uplifter.title,
+      "category": "positive_news",
+      "category_label": "The Daily Uplifter",
+      "subcategory": None,
+      "image_url": briefing.daily_uplifter.image_url,
+      "reading_time_minutes": briefing.daily_uplifter.reading_time_minutes,
+      "source_name": briefing.daily_uplifter.source_name,
+      "summary_list": [briefing.daily_uplifter.summary],
+      "detailed_context": briefing.daily_uplifter.detailed_context,
+      "is_narrative": True
+    } | tojson %}
+    <section id="section-uplifter" aria-labelledby="uplifter-heading">
+      <article class="uplifter-card rounded-2xl overflow-hidden shadow-sm transition">
+        <div class="grid grid-cols-1 md:grid-cols-12">
+          <!-- Hero Image (LCP candidate: fetchpriority="high", no lazy loading) -->
+          <div class="card-media-wrap md:col-span-5 md:aspect-auto md:h-full">
+            <img
+              src="{{ briefing.daily_uplifter.image_url }}"
+              alt="{{ briefing.daily_uplifter.title }}"
+              fetchpriority="high"
+              width="800"
+              height="450"
+            />
+            <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 via-black/20 to-transparent">
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-300 backdrop-blur-md border border-emerald-400/30">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+                </svg>
+                <span id="uplifter-heading">The Daily Uplifter</span>
+              </span>
+
+              <button
+                type="button"
+                class="save-btn"
+                data-url="{{ briefing.daily_uplifter.source_url }}"
+                data-story='{{ uplifter_json }}'
+                aria-pressed="false"
+                aria-label="Save article for later"
+                title="Save for later"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Uplifter Copy -->
+          <div class="p-4 sm:p-6 md:col-span-7 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>{{ briefing.daily_uplifter.source_name }}</span>
+                <span>~{{ briefing.daily_uplifter.reading_time_minutes }} min read</span>
+              </div>
+
+              <h2 class="font-serif text-xl sm:text-2xl font-bold leading-snug mb-2.5">
+                <a
+                  href="{{ briefing.daily_uplifter.source_url }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:underline"
+                >
+                  {{ briefing.daily_uplifter.title }}
+                </a>
+              </h2>
+
+              <p class="text-sm sm:text-base leading-relaxed mb-4" style="color: var(--text-secondary);">
+                {{ briefing.daily_uplifter.summary }}
+              </p>
+            </div>
+
+            <div class="pt-3 border-t border-emerald-500/20 flex flex-col gap-2.5">
+              <details class="tell-me-more">
+                <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 hover:opacity-80">
+                  <span>Tell Me More ({{ briefing.daily_uplifter.detailed_context | length }} points)</span>
+                  <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div class="drawer-body mt-2.5">
+                  <ul class="space-y-2 text-xs sm:text-sm pl-4 list-disc marker:text-emerald-500" style="color: var(--text-secondary);">
+                    {% for point in briefing.daily_uplifter.detailed_context %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </details>
+
+              <div class="flex justify-end text-xs font-mono">
+                <a
+                  href="{{ briefing.daily_uplifter.source_url }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1 font-semibold underline decoration-emerald-500/50 hover:decoration-emerald-500"
+                  style="color: var(--text-primary);"
+                >
+                  <span>Read Full Story</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 2. MONDAY SPECIAL PANEL: "Releasing This Week" -->
+    {% if briefing.monday_releases and briefing.monday_releases.items %}
+    <section
+      id="section-monday-releases"
+      data-category-section="entertainment"
+      aria-labelledby="monday-releases-heading"
+      class="rounded-2xl p-4 sm:p-6 elevated-surface"
+    >
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider font-semibold" style="color: var(--accent-iris);">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+          </svg>
+          <span>Releasing This Week</span>
+        </div>
+        <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full surface-card">
+          Monday Radar
+        </span>
+      </div>
+
+      <h2 id="monday-releases-heading" class="font-serif text-xl sm:text-2xl font-bold mb-4">
+        {{ briefing.monday_releases.headline }}
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for item in briefing.monday_releases.items %}
+        <article class="surface-card rounded-xl overflow-hidden flex flex-col justify-between">
+          <div>
+            {% if item.image_url %}
+            <div class="card-media-wrap">
+              <img
+                src="{{ item.image_url }}"
+                alt="{{ item.title }}"
+                loading="lazy"
+                width="600"
+                height="338"
+              />
+              <div class="absolute inset-x-0 top-0 p-2.5 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 to-transparent">
+                <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  {{ item.medium }}
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/60 text-white/90 backdrop-blur-md">
+                  {{ item.release_details }}
+                </span>
+              </div>
+            </div>
+            {% endif %}
+            <div class="p-4">
+              <h3 class="font-serif font-bold text-base sm:text-lg mb-1.5">
+                <a href="{{ item.source_url }}" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  {{ item.title }}
+                </a>
+              </h3>
+              <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--text-secondary);">
+                {{ item.why_it_matters }}
+              </p>
+            </div>
+          </div>
+          <div class="px-4 py-2.5 border-t flex items-center justify-between text-xs font-mono" style="border-color: var(--border-soft); color: var(--text-secondary);">
+            <span>{{ item.source_name }}</span>
+            <a
+              href="{{ item.source_url }}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 font-semibold hover:underline"
+              style="color: var(--text-primary);"
+            >
+              <span>Preview</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- 3. TOP STORIES (1-2 Paragraph Narrative Summaries with Article Cover Image) -->
+    {% if briefing.top_stories %}
+    <section id="section-top-stories" aria-labelledby="top-stories-heading" class="space-y-4">
+      <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-soft);">
+        <h2 id="top-stories-heading" class="font-serif text-xl sm:text-2xl font-bold tracking-tight">
+          Lead Stories
+        </h2>
+        <span class="text-[11px] font-mono uppercase tracking-wider" style="color: var(--text-secondary);">
+          Deep-Dive Synthesis
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {% for story in briefing.top_stories %}
+        {% set top_json = {
+          "source_url": story.source_url,
+          "title": story.title,
+          "category": story.category,
+          "category_label": story.category_label,
+          "subcategory": story.subcategory,
+          "image_url": story.image_url,
+          "reading_time_minutes": story.reading_time_minutes,
+          "source_name": story.source_name,
+          "summary_list": story.narrative_paragraphs,
+          "detailed_context": story.detailed_context,
+          "is_narrative": True
+        } | tojson %}
+        <article
+          class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition"
+          data-category="{{ story.category }}"
+        >
+          <div>
+            <!-- Article Cover Image + Floating Category & Save Button -->
+            <div class="card-media-wrap">
+              <img
+                src="{{ story.image_url }}"
+                alt="{{ story.title }}"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    {{ story.category_label }}
+                  </span>
+                  {% if story.subcategory %}
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    {{ story.subcategory }}
+                  </span>
+                  {% endif %}
+                </div>
+
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="{{ story.source_url }}"
+                  data-story='{{ top_json }}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>{{ story.source_name }}</span>
+                <span>~{{ story.reading_time_minutes }} min read</span>
+              </div>
+
+              <!-- Headline -->
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a
+                  href="{{ story.source_url }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:underline"
+                >
+                  {{ story.title }}
+                </a>
+              </h3>
+
+              <!-- 1-2 Narrative Paragraphs -->
+              <div class="space-y-2.5 text-sm leading-relaxed" style="color: var(--text-secondary);">
+                {% for paragraph in story.narrative_paragraphs %}
+                <p>{{ paragraph }}</p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <!-- Tell Me More Drawer -->
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More ({{ story.detailed_context | length }} points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  {% for bullet in story.detailed_context %}
+                  <li>{{ bullet }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </details>
+
+            <!-- Outbound Source Link & Corroborating Sources -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a
+                href="{{ story.source_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 font-semibold hover:underline"
+                style="color: var(--text-primary);"
+              >
+                <span>Read on {{ story.source_name }}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+              {% if story.corroborating_sources %}
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">
+                + {{ story.corroborating_sources | join(', ') }}
+              </span>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- 4. CURATED CATEGORY DISPATCHES -->
+    <section id="section-curated-stories" aria-labelledby="curated-stories-heading" class="space-y-4">
+      <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-soft);">
+        <h2 id="curated-stories-heading" class="font-serif text-xl sm:text-2xl font-bold tracking-tight">
+          Dispatches
+        </h2>
+        <span id="visible-count-label" class="text-[11px] font-mono uppercase tracking-wider" style="color: var(--text-secondary);">
+          All Dispatches
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {% for story in briefing.stories %}
+        {% set card_json = {
+          "source_url": story.source_url,
+          "title": story.title,
+          "category": story.category,
+          "category_label": story.category_label,
+          "subcategory": story.subcategory,
+          "image_url": story.image_url,
+          "reading_time_minutes": story.reading_time_minutes,
+          "source_name": story.source_name,
+          "summary_list": story.bullet_points,
+          "detailed_context": story.detailed_context,
+          "is_narrative": False
+        } | tojson %}
+        <article
+          class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition"
+          data-category="{{ story.category }}"
+        >
+          <div>
+            <!-- Article Cover Image + Floating Category & Save Button -->
+            <div class="card-media-wrap">
+              <img
+                src="{{ story.image_url }}"
+                alt="{{ story.title }}"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    {{ story.category_label }}
+                  </span>
+                  {% if story.subcategory %}
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    {{ story.subcategory }}
+                  </span>
+                  {% endif %}
+                </div>
+
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="{{ story.source_url }}"
+                  data-story='{{ card_json }}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>{{ story.source_name }}</span>
+                <span>~{{ story.reading_time_minutes }} min read</span>
+              </div>
+
+              <!-- Story Headline -->
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a
+                  href="{{ story.source_url }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:underline"
+                >
+                  {{ story.title }}
+                </a>
+              </h3>
+
+              <!-- 2 Concise Summary Bullet Points -->
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                {% for point in story.bullet_points %}
+                <li>{{ point }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <!-- Collapsible Accordion: Tell Me More (3-4 Analytical Bullets) -->
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More ({{ story.detailed_context | length }} points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  {% for detail in story.detailed_context %}
+                  <li>{{ detail }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </details>
+
+            <!-- Outbound Source Link -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a
+                href="{{ story.source_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 font-semibold hover:underline"
+                style="color: var(--text-primary);"
+              >
+                <span>Read on {{ story.source_name }}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+              {% if story.corroborating_sources %}
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">
+                + {{ story.corroborating_sources | join(', ') }}
+              </span>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- 5. SAVED FOR LATER SECTION (Populated from localStorage across daily builds) -->
+    <section id="section-saved" aria-labelledby="saved-stories-heading" class="space-y-5" hidden>
+      <div class="flex items-center justify-between border-b pb-2.5" style="border-color: var(--border-soft);">
+        <div>
+          <h2 id="saved-stories-heading" class="font-serif text-xl sm:text-2xl font-bold tracking-tight">
+            Saved for Later
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-secondary);">
+            Stored on this device so you can catch up any day, even after tomorrow's update.
+          </p>
+        </div>
+        <button
+          id="clear-saved-btn"
+          type="button"
+          class="text-xs font-mono underline px-2.5 py-1 rounded-md elevated-surface hover:opacity-80"
+          style="color: var(--accent-iris);"
+          hidden
+        >
+          Clear All
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      <div id="saved-empty-state" class="surface-card rounded-2xl p-8 sm:p-12 text-center max-w-md mx-auto my-6">
+        <div class="w-12 h-12 rounded-full elevated-surface mx-auto mb-3 flex items-center justify-center" style="color: var(--accent-iris);">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg font-bold mb-1">No saved stories yet</h3>
+        <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--text-secondary);">
+          Tap the bookmark icon in the top-right corner of any story card to save it here for weekend or evening reading.
+        </p>
+      </div>
+
+      <!-- Saved Cards Grid -->
+      <div id="saved-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5" hidden></div>
+    </section>
+
+  </main>
+
+  <!-- Floating Morphing Bottom Navigation Bar (Adapted from c09-bnav with Icons & Labels) -->
+  <div class="c09-bnav-dock">
+    <nav class="c09-bnav" id="c09-bnav" aria-label="Category and Saved navigation">
+      <span class="c09-bnav__blob" id="c09-blob" aria-hidden="true"></span>
+
+      <button type="button" class="c09-bnav__btn c09-bnav__btn--active" data-filter="all" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" />
+          <rect x="14" y="3" width="7" height="7" rx="1.5" />
+          <rect x="3" y="14" width="7" height="7" rx="1.5" />
+          <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        </svg>
+        <span class="c09-bnav__label">All</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="uk_news" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2v4" />
+          <path d="M8 6h8l1 14H7L8 6z" />
+          <path d="M5 20h14" />
+          <circle cx="12" cy="11" r="2" />
+        </svg>
+        <span class="c09-bnav__label">UK</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="world_news" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3.6 9h16.8" />
+          <path d="M3.6 15h16.8" />
+          <path d="M11.5 3a17 17 0 000 18" />
+          <path d="M12.5 3a17 17 0 010 18" />
+        </svg>
+        <span class="c09-bnav__label">World</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="tech_ai" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="4" width="16" height="16" rx="2" />
+          <rect x="9" y="9" width="6" height="6" />
+          <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+        </svg>
+        <span class="c09-bnav__label">Tech</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="sports" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9H4.5a2.5 2.5 0 010-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 000-5H18" />
+          <path d="M4 22h16" />
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+          <path d="M18 2H6v7a6 6 0 0012 0V2z" />
+        </svg>
+        <span class="c09-bnav__label">Sports</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="entertainment" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="3" width="20" height="18" rx="2" />
+          <path d="M7 3v18M17 3v18M2 8h5M2 12h20M2 16h5M17 8h5M17 16h5" />
+        </svg>
+        <span class="c09-bnav__label">Culture</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="food" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2" />
+          <path d="M7 2v20" />
+          <path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" />
+        </svg>
+        <span class="c09-bnav__label">Food</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="niche_hobbies" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="8" rx="2" />
+          <rect x="2" y="14" width="20" height="8" rx="2" />
+          <line x1="6" y1="6" x2="6.01" y2="6" />
+          <line x1="6" y1="18" x2="6.01" y2="18" />
+        </svg>
+        <span class="c09-bnav__label">Niche</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="saved" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+        <span class="c09-bnav__label">Saved</span>
+        <span id="saved-count-badge" class="c09-bnav__badge" hidden>0</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- External Controller Script -->
+  <script src="app.js" defer></script>
+</body>
+</html>

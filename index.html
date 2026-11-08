@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- MANDATORY: Declare support for both light and dark themes -->
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    try {
+      document.querySelector('meta[name="color-scheme"]').content =
+        localStorage.getItem("color-scheme") ?? "light dark";
+    } catch (e) {}
+  </script>
+  <title>Daybreak — Monday, 09 November 2026</title>
+
+  <!-- Google Fonts: Newsreader (Editorial Serif), Inter (UI Sans), JetBrains Mono (Metadata) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="min-h-screen antialiased selection:bg-pink-500/20">
+
+  <!-- Compact Mobile-First Header -->
+  <header class="border-b" style="border-color: var(--border-soft);">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-3 pb-2.5 flex items-center justify-between gap-2 text-[11px] sm:text-xs font-mono" style="color: var(--text-secondary);">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="inline-flex items-center gap-1.5 font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full elevated-surface" style="color: var(--text-primary);">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Monday
+        </span>
+        <span>09 November 2026</span>
+      </div>
+
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Total Reading Time Badge -->
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md elevated-surface" title="Estimated time to read this briefing">
+          <svg class="w-3.5 h-3.5 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span><strong>5m</strong> read</span>
+        </span>
+
+        <!-- Expand / Collapse All Drawers -->
+        <button
+          id="toggle-all-drawers"
+          type="button"
+          class="px-2 py-1 rounded-md elevated-surface hover:opacity-80 transition font-sans font-medium text-[11px] sm:text-xs"
+          style="color: var(--text-primary);"
+        >
+          Expand Context
+        </button>
+
+        <!-- Theme Toggle Button -->
+        <button
+          id="theme-toggle"
+          type="button"
+          class="inline-flex items-center gap-1 px-2 py-1 rounded-md elevated-surface hover:opacity-80 transition font-sans font-medium text-[11px] sm:text-xs"
+          style="color: var(--text-primary);"
+          aria-label="Toggle color theme"
+          title="Switch between light and dark theme"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <span id="theme-toggle-label">Theme</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Masthead -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-6">
+        <div class="flex items-baseline gap-3">
+          <h1 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight">
+            Daybreak
+          </h1>
+          <span class="text-xs font-mono uppercase tracking-widest brand-gradient-text font-semibold">
+            06:30 GMT
+          </span>
+        </div>
+        <p class="text-xs sm:text-sm max-w-xl leading-relaxed" style="color: var(--text-secondary);">
+          UK grid modernization and Bank of England rate outlook lead the domestic agenda, alongside open-weights reasoning benchmarks, Arsenal's unbeaten run, and this week's screen releases.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-8">
+
+    <!-- 1. THE DAILY UPLIFTER (Dedicated Top Highlight Card with LCP Image) -->
+    <section id="section-uplifter" aria-labelledby="uplifter-heading">
+      <article class="uplifter-card rounded-2xl overflow-hidden shadow-sm transition">
+        <div class="grid grid-cols-1 md:grid-cols-12">
+          <!-- Hero Image (LCP candidate: fetchpriority="high", no lazy loading) -->
+          <div class="card-media-wrap md:col-span-5 md:aspect-auto md:h-full">
+            <img
+              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80"
+              alt="Scottish Seagrass Restoration Project Surpasses Five Million Planted Seeds Ahead of Schedule"
+              fetchpriority="high"
+              width="800"
+              height="450"
+            />
+            <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 via-black/20 to-transparent">
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-300 backdrop-blur-md border border-emerald-400/30">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+                </svg>
+                <span id="uplifter-heading">The Daily Uplifter</span>
+              </span>
+
+              <button
+                type="button"
+                class="save-btn"
+                data-url="https://www.positive.news/environment/scottish-seagrass-restoration"
+                data-story='{"source_url":"https://www.positive.news/environment/scottish-seagrass-restoration","title":"Scottish Seagrass Restoration Project Surpasses Five Million Planted Seeds Ahead of Schedule","category":"positive_news","category_label":"The Daily Uplifter","subcategory":null,"image_url":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80","reading_time_minutes":3,"source_name":"Positive News UK","summary_list":["A coalition of coastal communities and marine biologists across the Scottish Highlands has restored over 40 hectares of underwater seagrass meadows six months ahead of target. Survey dives confirm the rapid return of juvenile Atlantic cod, seahorses, and native bivalves to lochs previously degraded by historical dredging."],"detailed_context":["Seagrass meadows sequester carbon in marine sediment up to 35 times faster per hectare than tropical rainforests while buffering coastal erosion.","More than 1,400 local schoolchildren and volunteer divers participated in weaving biodegradable hessian seed bags over the autumn planting window.","Acoustic monitoring arrays recorded a 68% increase in marine biodiversity richness within 14 months of the initial test plots.","The blueprint is now being adopted by partner community trusts in North Wales, Cornwall, and Essex for 2027 deployment."],"is_narrative":true}'
+                aria-pressed="false"
+                aria-label="Save article for later"
+                title="Save for later"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Uplifter Copy -->
+          <div class="p-4 sm:p-6 md:col-span-7 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Positive News UK</span>
+                <span>~3 min read</span>
+              </div>
+
+              <h2 class="font-serif text-xl sm:text-2xl font-bold leading-snug mb-2.5">
+                <a
+                  href="https://www.positive.news/environment/scottish-seagrass-restoration"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:underline"
+                >
+                  Scottish Seagrass Restoration Project Surpasses Five Million Planted Seeds Ahead of Schedule
+                </a>
+              </h2>
+
+              <p class="text-sm sm:text-base leading-relaxed mb-4" style="color: var(--text-secondary);">
+                A coalition of coastal communities and marine biologists across the Scottish Highlands has restored over 40 hectares of underwater seagrass meadows six months ahead of target. Survey dives confirm the rapid return of juvenile Atlantic cod, seahorses, and native bivalves to lochs previously degraded by historical dredging.
+              </p>
+            </div>
+
+            <div class="pt-3 border-t border-emerald-500/20 flex flex-col gap-2.5">
+              <details class="tell-me-more">
+                <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 hover:opacity-80">
+                  <span>Tell Me More (4 points)</span>
+                  <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div class="drawer-body mt-2.5">
+                  <ul class="space-y-2 text-xs sm:text-sm pl-4 list-disc marker:text-emerald-500" style="color: var(--text-secondary);">
+                    <li>Seagrass meadows sequester carbon in marine sediment up to 35 times faster per hectare than tropical rainforests while buffering coastal erosion.</li>
+                    <li>More than 1,400 local schoolchildren and volunteer divers participated in weaving biodegradable hessian seed bags over the autumn planting window.</li>
+                    <li>Acoustic monitoring arrays recorded a 68% increase in marine biodiversity richness within 14 months of the initial test plots.</li>
+                    <li>The blueprint is now being adopted by partner community trusts in North Wales, Cornwall, and Essex for 2027 deployment.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <div class="flex justify-end text-xs font-mono">
+                <a
+                  href="https://www.positive.news/environment/scottish-seagrass-restoration"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1 font-semibold underline decoration-emerald-500/50 hover:decoration-emerald-500"
+                  style="color: var(--text-primary);"
+                >
+                  <span>Read Full Story</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 2. MONDAY SPECIAL PANEL: "Releasing This Week" -->
+    <section
+      id="section-monday-releases"
+      data-category-section="entertainment"
+      aria-labelledby="monday-releases-heading"
+      class="rounded-2xl p-4 sm:p-6 elevated-surface"
+    >
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider font-semibold" style="color: var(--accent-iris);">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+          </svg>
+          <span>Releasing This Week</span>
+        </div>
+        <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full surface-card">
+          Monday Radar
+        </span>
+      </div>
+
+      <h2 id="monday-releases-heading" class="font-serif text-xl sm:text-2xl font-bold mb-4">
+        Releasing This Week Across UK Cinemas, Streaming &amp; PC/Console
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <article class="surface-card rounded-xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80"
+                alt="The Glass Meridian"
+                loading="lazy"
+                width="600"
+                height="338"
+              />
+              <div class="absolute inset-x-0 top-0 p-2.5 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 to-transparent">
+                <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  Film
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/60 text-white/90 backdrop-blur-md">
+                  UK Cinemas • Friday
+                </span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-serif font-bold text-base sm:text-lg mb-1.5">
+                <a href="https://www.theguardian.com/film" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  The Glass Meridian
+                </a>
+              </h3>
+              <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--text-secondary);">
+                A taut cold-water maritime thriller starring Saoirse Ronan and Stephen Graham, following a North Sea subsea cable inspection crew that uncovers deliberate sabotage.
+              </p>
+            </div>
+          </div>
+          <div class="px-4 py-2.5 border-t flex items-center justify-between text-xs font-mono" style="border-color: var(--border-soft); color: var(--text-secondary);">
+            <span>The Guardian - Film</span>
+            <a href="https://www.theguardian.com/film" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+              <span>Preview</span><span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="surface-card rounded-xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1529655683826-aba9b3e77383?auto=format&fit=crop&w=700&q=80"
+                alt="Whitehall: Series 2 Premiere"
+                loading="lazy"
+                width="600"
+                height="338"
+              />
+              <div class="absolute inset-x-0 top-0 p-2.5 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 to-transparent">
+                <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  TV
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/60 text-white/90 backdrop-blur-md">
+                  BBC One &amp; iPlayer • Sunday
+                </span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-serif font-bold text-base sm:text-lg mb-1.5">
+                <a href="https://www.theguardian.com/tv-and-radio" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Whitehall: Series 2 Premiere
+                </a>
+              </h3>
+              <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--text-secondary);">
+                The BAFTA-winning civil service drama returns with a six-part arc examining emergency energy negotiations and Treasury infighting over a winter weekend.
+              </p>
+            </div>
+          </div>
+          <div class="px-4 py-2.5 border-t flex items-center justify-between text-xs font-mono" style="border-color: var(--border-soft); color: var(--text-secondary);">
+            <span>The Guardian - TV &amp; Radio</span>
+            <a href="https://www.theguardian.com/tv-and-radio" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+              <span>Preview</span><span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="surface-card rounded-xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=700&q=80"
+                alt="Clockwork Spire: Chronos Edition"
+                loading="lazy"
+                width="600"
+                height="338"
+              />
+              <div class="absolute inset-x-0 top-0 p-2.5 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 to-transparent">
+                <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  Video Game
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/60 text-white/90 backdrop-blur-md">
+                  PC / PS5 / Xbox • Thursday
+                </span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-serif font-bold text-base sm:text-lg mb-1.5">
+                <a href="https://www.eurogamer.net/" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Clockwork Spire: Chronos Edition
+                </a>
+              </h3>
+              <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--text-secondary);">
+                Early reviews praise the tactical roguelike deckbuilder's deep mechanical synergies and 60fps Steam Deck verification ahead of Thursday's 1.0 launch.
+              </p>
+            </div>
+          </div>
+          <div class="px-4 py-2.5 border-t flex items-center justify-between text-xs font-mono" style="border-color: var(--border-soft); color: var(--text-secondary);">
+            <span>Eurogamer</span>
+            <a href="https://www.eurogamer.net/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+              <span>Preview</span><span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 3. TOP STORIES (1-2 Paragraph Narrative Summaries with Article Cover Image) -->
+    <section id="section-top-stories" aria-labelledby="top-stories-heading" class="space-y-4">
+      <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-soft);">
+        <h2 id="top-stories-heading" class="font-serif text-xl sm:text-2xl font-bold tracking-tight">
+          Lead Stories
+        </h2>
+        <span class="text-[11px] font-mono uppercase tracking-wider" style="color: var(--text-secondary);">
+          Deep-Dive Synthesis
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <!-- Lead Story 1: UK News -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="uk_news">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&q=80"
+                alt="National Grid and Ofgem Fast-Track £24bn Clean Power Interconnector and Storage Overhaul"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    UK News
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.bbc.co.uk/news/uk-grid-overhaul"
+                  data-story='{"source_url":"https://www.bbc.co.uk/news/uk-grid-overhaul","title":"National Grid and Ofgem Fast-Track £24bn Clean Power Interconnector and Storage Overhaul","category":"uk_news","category_label":"UK News","subcategory":null,"image_url":"https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&q=80","reading_time_minutes":5,"source_name":"BBC News - UK","summary_list":["Energy regulator Ofgem has signed off on an accelerated multi-billion-pound grid transmission programme aimed at clearing the multi-year connection backlog for offshore wind farms and utility-scale battery storage across Britain. Under the revised first-ready, first-connected framework, speculative zombie projects that lack land rights or financing will lose their queue slots beginning next month.","Industry groups welcomed the reform as the single biggest structural unlock for UK clean energy investment in a decade, though regional distribution operators cautioned that transformer supply chains and planning approvals in East Anglia and Scotland remain critical bottlenecks to watch over the next 18 months."],"detailed_context":["Over 700 gigawatts of generation and storage projects were previously stuck in the connection queue—more than four times Britain total needed capacity by 2030.","Grid balancing (curtailment) payments—paying Scottish wind farms to switch off when lines heading south are congested—cost UK billpayers £1.4bn over the past year.","Three new high-voltage subsea HVDC links down the eastern coast will add 12GW of north-to-south transfer capacity.","Household standing charges are projected to remain flat in real terms as curtailment savings offset capital amortisation."],"is_narrative":true}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>BBC News - UK</span>
+                <span>~5 min read</span>
+              </div>
+
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.bbc.co.uk/news/uk" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  National Grid and Ofgem Fast-Track £24bn Clean Power Interconnector and Storage Overhaul
+                </a>
+              </h3>
+
+              <div class="space-y-2.5 text-sm leading-relaxed" style="color: var(--text-secondary);">
+                <p>
+                  Energy regulator Ofgem has signed off on an accelerated multi-billion-pound grid transmission programme aimed at clearing the multi-year connection backlog for offshore wind farms and utility-scale battery storage across Britain. Under the revised "first-ready, first-connected" framework, speculative "zombie" projects that lack land rights or financing will lose their queue slots beginning next month.
+                </p>
+                <p>
+                  Industry groups welcomed the reform as the single biggest structural unlock for UK clean energy investment in a decade, though regional distribution operators cautioned that transformer supply chains and planning approvals in East Anglia and Scotland remain critical bottlenecks to watch over the next 18 months.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (4 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Over 700 gigawatts of generation and storage projects were previously stuck in the connection queue—more than four times Britain's total needed capacity by 2030.</li>
+                  <li>Grid balancing ("curtailment") payments—paying Scottish wind farms to switch off when lines heading south are congested—cost UK billpayers £1.4bn over the past year.</li>
+                  <li>Three new high-voltage subsea HVDC links down the eastern coast will add 12GW of north-to-south transfer capacity.</li>
+                  <li>Household standing charges are projected to remain flat in real terms as curtailment savings offset capital amortisation.</li>
+                </ul>
+              </div>
+            </details>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.bbc.co.uk/news/uk" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on BBC News - UK</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">
+                + The Guardian UK, Sky News
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Lead Story 2: Tech & AI -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="tech_ai">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"
+                alt="Sub-10B Parameter Local Models Reach Frontier Coding Parity via Test-Time Verification Loops"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Tech &amp; AI
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://arstechnica.com/ai/local-coding-models"
+                  data-story='{"source_url":"https://arstechnica.com/ai/local-coding-models","title":"Sub-10B Parameter Local Models Reach Frontier Coding Parity via Test-Time Verification Loops","category":"tech_ai","category_label":"Tech & AI","subcategory":null,"image_url":"https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80","reading_time_minutes":6,"source_name":"Ars Technica","summary_list":["New independent evaluations published across Ars Technica and Hacker News demonstrate that compact 8B–14B open-weight models paired with lightweight local compiler and unit-test verification harnesses are now matching last year 400B+ cloud frontier models on repository-scale debugging benchmarks.","By shifting compute from static pre-training parameter counts to iterative local execution checks on consumer GPUs and Apple Silicon unified memory, developers can run multi-file refactoring workflows entirely offline with zero token egress latency or privacy exposure."],"detailed_context":["Quantized 4-bit weights fit comfortably inside 12GB of VRAM while sustaining 85+ tokens/sec generation speeds on desktop GPUs.","The biggest accuracy jump comes from feeding deterministic AST linter and pytest tracebacks back into the context window between steps.","Hacker News discussion (640+ points) highlighted dramatic cost reductions for CI/CD automated PR triage pipelines.","Memory bandwidth—not raw FLOPs—remains the primary hardware bottleneck for multi-agent local inference."],"is_narrative":true}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Ars Technica</span>
+                <span>~6 min read</span>
+              </div>
+
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://arstechnica.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Sub-10B Parameter Local Models Reach Frontier Coding Parity via Test-Time Verification Loops
+                </a>
+              </h3>
+
+              <div class="space-y-2.5 text-sm leading-relaxed" style="color: var(--text-secondary);">
+                <p>
+                  New independent evaluations published across Ars Technica and Hacker News demonstrate that compact 8B–14B open-weight models paired with lightweight local compiler and unit-test verification harnesses are now matching last year's 400B+ cloud frontier models on repository-scale debugging benchmarks.
+                </p>
+                <p>
+                  By shifting compute from static pre-training parameter counts to iterative local execution checks on consumer GPUs and Apple Silicon unified memory, developers can run multi-file refactoring workflows entirely offline with zero token egress latency or privacy exposure.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (4 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Quantized 4-bit weights fit comfortably inside 12GB of VRAM while sustaining 85+ tokens/sec generation speeds on desktop GPUs.</li>
+                  <li>The biggest accuracy jump comes from feeding deterministic AST linter and pytest tracebacks back into the context window between steps.</li>
+                  <li>Hacker News discussion (640+ points) highlighted dramatic cost reductions for CI/CD automated PR triage pipelines.</li>
+                  <li>Memory bandwidth—not raw FLOPs—remains the primary hardware bottleneck for multi-agent local inference.</li>
+                </ul>
+              </div>
+            </details>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://arstechnica.com/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on Ars Technica</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">
+                + Hacker News, The Verge
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Lead Story 3: Sports • Football • Arsenal FC -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="sports">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=800&q=80"
+                alt="Arteta Hails Midfield Control as Arsenal Extend Unbeaten Run Ahead of International Break"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Sports
+                  </span>
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    Football • Arsenal FC
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://arseblog.news/arsenal-unbeaten-run"
+                  data-story='{"source_url":"https://arseblog.news/arsenal-unbeaten-run","title":"Arteta Hails Midfield Control as Arsenal Extend Unbeaten Run Ahead of International Break","category":"sports","category_label":"Sports","subcategory":"Football • Arsenal FC","image_url":"https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=800&q=80","reading_time_minutes":4,"source_name":"Arseblog","summary_list":["Arsenal tightened their grip near the top of the Premier League table with a clinical display at the Emirates, dictated by Martin Ødegaard press orchestration and Declan Rice ball recoveries in the middle third. Bukayo Saka registered both a goal and an assist as the Gunners restricted their visitors to just 0.34 expected goals (xG) over 90 minutes.","Speaking post-match, Mikel Arteta confirmed that William Saliba late substitution was purely precautionary workload management, while praising the squad tactical maturity in managing tight turnaround fixtures between European and domestic commitments."],"detailed_context":["Arsenal have now scored 14 set-piece goals across all competitions this campaign, leading Europe top five leagues.","Declan Rice completed 94% of his progressive passes into the final third while winning 8 of 9 ground duels.","Saka becomes the youngest Arsenal player since Cesc Fàbregas to reach 120 combined Premier League goal involvements.","Several senior starters will remain at London Colney over the break with minor knocks managed in coordination with national federations."],"is_narrative":true}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Arseblog</span>
+                <span>~4 min read</span>
+              </div>
+
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://arseblog.news/" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Arteta Hails Midfield Control as Arsenal Extend Unbeaten Run Ahead of International Break
+                </a>
+              </h3>
+
+              <div class="space-y-2.5 text-sm leading-relaxed" style="color: var(--text-secondary);">
+                <p>
+                  Arsenal tightened their grip near the top of the Premier League table with a clinical display at the Emirates, dictated by Martin Ødegaard's press orchestration and Declan Rice's ball recoveries in the middle third. Bukayo Saka registered both a goal and an assist as the Gunners restricted their visitors to just 0.34 expected goals (xG) over 90 minutes.
+                </p>
+                <p>
+                  Speaking post-match, Mikel Arteta confirmed that William Saliba's late substitution was purely precautionary workload management, while praising the squad's tactical maturity in managing tight turnaround fixtures between European and domestic commitments.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (4 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Arsenal have now scored 14 set-piece goals across all competitions this campaign, leading Europe's top five leagues.</li>
+                  <li>Declan Rice completed 94% of his progressive passes into the final third while winning 8 of 9 ground duels.</li>
+                  <li>Saka becomes the youngest Arsenal player since Cesc Fàbregas to reach 120 combined Premier League goal involvements.</li>
+                  <li>Several senior starters will remain at London Colney over the break with minor knocks managed in coordination with national federations.</li>
+                </ul>
+              </div>
+            </details>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://arseblog.news/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on Arseblog</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">
+                + BBC Sport Arsenal
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 4. CURATED CATEGORY DISPATCHES -->
+    <section id="section-curated-stories" aria-labelledby="curated-stories-heading" class="space-y-4">
+      <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-soft);">
+        <h2 id="curated-stories-heading" class="font-serif text-xl sm:text-2xl font-bold tracking-tight">
+          Dispatches
+        </h2>
+        <span id="visible-count-label" class="text-[11px] font-mono uppercase tracking-wider" style="color: var(--text-secondary);">
+          All Dispatches (16)
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- UK News #2 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="uk_news">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80"
+                alt="Bank of England Signals Measured Path on Interest Rates Amid Services Wage Cooling"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  UK News
+                </span>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.theguardian.com/uk-news/boe-rates"
+                  data-story='{"source_url":"https://www.theguardian.com/uk-news/boe-rates","title":"Bank of England Signals Measured Path on Interest Rates Amid Services Wage Cooling","category":"uk_news","category_label":"UK News","subcategory":null,"image_url":"https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80","reading_time_minutes":4,"source_name":"The Guardian - UK News","summary_list":["MPC policymakers noted private-sector services inflation eased to 4.1% in the latest ONS print, strengthening expectations for a quarter-point cut in the next cycle.","High-street lenders have already trimmed 2-year and 5-year fixed mortgage rates by 15–20 basis points in anticipation of Threadneedle Street trajectory."],"detailed_context":["Swap markets are pricing in two 25bps reductions over the next six months.","Around 1.6 million UK households are scheduled to remortgage off legacy low-rate fixes over the coming 12 months.","Sterling held steady at $1.31 and €1.19 following the Monetary Policy Report briefing."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>The Guardian - UK News</span>
+                <span>~4 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.theguardian.com/uk-news" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Bank of England Signals Measured Path on Interest Rates Amid Services Wage Cooling
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>MPC policymakers noted private-sector services inflation eased to 4.1% in the latest ONS print, strengthening expectations for a quarter-point cut in the next cycle.</li>
+                <li>High-street lenders have already trimmed 2-year and 5-year fixed mortgage rates by 15–20 basis points in anticipation of Threadneedle Street's trajectory.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Swap markets are pricing in two 25bps reductions over the next six months.</li>
+                  <li>Around 1.6 million UK households are scheduled to remortgage off legacy low-rate fixes over the coming 12 months.</li>
+                  <li>Sterling held steady at $1.31 and €1.19 following the Monetary Policy Report briefing.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.theguardian.com/uk-news" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on The Guardian - UK News</span><span aria-hidden="true">↗</span>
+              </a>
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">+ BBC News UK</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- UK News #3 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="uk_news">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80"
+                alt="NHS Rolls Out AI-Assisted Diagnostic Imaging Hubs Across 45 Regional Trusts"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  UK News
+                </span>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://news.sky.com/uk/nhs-ai-imaging"
+                  data-story='{"source_url":"https://news.sky.com/uk/nhs-ai-imaging","title":"NHS Rolls Out AI-Assisted Diagnostic Imaging Hubs Across 45 Regional Trusts","category":"uk_news","category_label":"UK News","subcategory":null,"image_url":"https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80","reading_time_minutes":3,"source_name":"Sky News - UK","summary_list":["Chest X-ray and CT triage tools are cutting average radiology reporting turnaround times for urgent referrals from 11 days to under 24 hours.","Every flagged scan remains reviewed by a consultant radiologist, with automated prioritization surfacing high-risk cases immediately after capture."],"detailed_context":["Pilot deployments in Greater Manchester and Yorkshire cleared a 38,000-scan backlog in four months.","Normal scans with high confidence scores are batched for rapid verification, freeing specialist time for complex oncology cases.","NICE updated its clinical validation standards to track sensitivity across diverse patient demographics."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Sky News - UK</span>
+                <span>~3 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://news.sky.com/uk" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  NHS Rolls Out AI-Assisted Diagnostic Imaging Hubs Across 45 Regional Trusts
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Chest X-ray and CT triage tools are cutting average radiology reporting turnaround times for urgent referrals from 11 days to under 24 hours.</li>
+                <li>Every flagged scan remains reviewed by a consultant radiologist, with automated prioritization surfacing high-risk cases immediately after capture.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Pilot deployments in Greater Manchester and Yorkshire cleared a 38,000-scan backlog in four months.</li>
+                  <li>Normal scans with high confidence scores are batched for rapid verification, freeing specialist time for complex oncology cases.</li>
+                  <li>NICE updated its clinical validation standards to track sensitivity across diverse patient demographics.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://news.sky.com/uk" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on Sky News - UK</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- World News #1 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="world_news">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1515165562839-978bbcf18277?auto=format&fit=crop&w=800&q=80"
+                alt="European Union Finalises Cross-Border High-Speed Rail Ticketing and Customs Accord"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  World News
+                </span>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.bbc.co.uk/news/world-europe-rail"
+                  data-story='{"source_url":"https://www.bbc.co.uk/news/world-europe-rail","title":"European Union Finalises Cross-Border High-Speed Rail Ticketing and Customs Accord","category":"world_news","category_label":"World News","subcategory":null,"image_url":"https://images.unsplash.com/photo-1515165562839-978bbcf18277?auto=format&fit=crop&w=800&q=80","reading_time_minutes":5,"source_name":"BBC News - World","summary_list":["Transport ministers agreed on a unified open booking protocol requiring state rail operators to share real-time inventory and guaranteed passenger through-tickets across borders.","Bilateral juxtaposed border control upgrades in Brussels, Amsterdam, Cologne, and Geneva aim to expand direct Channel Tunnel passenger services by 2028."],"detailed_context":["Passengers missing a connecting train operated by a different national carrier will now receive automatic rebooking and delay compensation.","St Pancras International is expanding its international departures concourse to raise hourly passenger throughput from 1,800 to 3,600.","Three new competing rail operators have filed track-access applications for London–Frankfurt and London–Zurich routes."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>BBC News - World</span>
+                <span>~5 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.bbc.co.uk/news/world" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  European Union Finalises Cross-Border High-Speed Rail Ticketing and Customs Accord
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Transport ministers agreed on a unified open booking protocol requiring state rail operators to share real-time inventory and guaranteed passenger through-tickets across borders.</li>
+                <li>Bilateral juxtaposed border control upgrades in Brussels, Amsterdam, Cologne, and Geneva aim to expand direct Channel Tunnel passenger services by 2028.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Passengers missing a connecting train operated by a different national carrier will now receive automatic rebooking and delay compensation.</li>
+                  <li>St Pancras International is expanding its international departures concourse to raise hourly passenger throughput from 1,800 to 3,600.</li>
+                  <li>Three new competing rail operators have filed track-access applications for London–Frankfurt and London–Zurich routes.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.bbc.co.uk/news/world" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on BBC News - World</span><span aria-hidden="true">↗</span>
+              </a>
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">+ Reuters World</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- World News #2 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="world_news">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80"
+                alt="Pacific Maritime Corridor Nations Sign Binding Deep-Sea Cable Resilience Treaty"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  World News
+                </span>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.theguardian.com/world/pacific-cable-treaty"
+                  data-story='{"source_url":"https://www.theguardian.com/world/pacific-cable-treaty","title":"Pacific Maritime Corridor Nations Sign Binding Deep-Sea Cable Resilience Treaty","category":"world_news","category_label":"World News","subcategory":null,"image_url":"https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80","reading_time_minutes":4,"source_name":"The Guardian - World","summary_list":["Twelve Indo-Pacific nations established a shared rapid-repair vessel fleet and automated AIS anomaly monitoring network to protect transoceanic fibre-optic cables.","Telecom consortia will receive fast-tracked territorial permits for redundant landing stations to eliminate single-point regional outages."],"detailed_context":["Subsea fibre cables carry over 98% of international internet data and financial settlement traffic.","Distributed acoustic sensing (DAS) along existing optical fibres allows operators to detect anchor drags in real time.","Four dedicated cable-laying repair ships will be stationed in Singapore, Yokohama, Guam, and Sydney."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>The Guardian - World</span>
+                <span>~4 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.theguardian.com/world" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Pacific Maritime Corridor Nations Sign Binding Deep-Sea Cable Resilience Treaty
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Twelve Indo-Pacific nations established a shared rapid-repair vessel fleet and automated AIS anomaly monitoring network to protect transoceanic fibre-optic cables.</li>
+                <li>Telecom consortia will receive fast-tracked territorial permits for redundant landing stations to eliminate single-point regional outages.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Subsea fibre cables carry over 98% of international internet data and financial settlement traffic.</li>
+                  <li>Distributed acoustic sensing (DAS) along existing optical fibres allows operators to detect anchor drags in real time.</li>
+                  <li>Four dedicated cable-laying repair ships will be stationed in Singapore, Yokohama, Guam, and Sydney.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.theguardian.com/world" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on The Guardian - World</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Tech & AI #2 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="tech_ai">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
+                alt="SQLite 3.51 Introduces Native Vector Index Extension and Concurrent WAL2 Snapshots"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  Tech &amp; AI
+                </span>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://news.ycombinator.com/sqlite-vector"
+                  data-story='{"source_url":"https://news.ycombinator.com/sqlite-vector","title":"SQLite 3.51 Introduces Native Vector Index Extension and Concurrent WAL2 Snapshots","category":"tech_ai","category_label":"Tech & AI","subcategory":null,"image_url":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80","reading_time_minutes":4,"source_name":"Hacker News","summary_list":["The core SQLite team merged a zero-dependency quantized vector search module alongside non-blocking concurrent write transactions in WAL2 mode.","Benchmarks show sub-2ms cosine similarity queries across 1 million 768-dimensional embeddings inside a single portable database file."],"detailed_context":["Eliminates the need for external vector database sidecars in self-hosted and edge applications.","WAL2 cyclically alternates between two write-ahead log files so long-running analytical reads never block checkpointing.","Full backward compatibility is preserved for standard single-WAL databases."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Hacker News</span>
+                <span>~4 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://news.ycombinator.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  SQLite 3.51 Introduces Native Vector Index Extension and Concurrent WAL2 Snapshots
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>The core SQLite team merged a zero-dependency quantized vector search module alongside non-blocking concurrent write transactions in WAL2 mode.</li>
+                <li>Benchmarks show sub-2ms cosine similarity queries across 1 million 768-dimensional embeddings inside a single portable database file.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Eliminates the need for external vector database sidecars in self-hosted and edge applications.</li>
+                  <li>WAL2 cyclically alternates between two write-ahead log files so long-running analytical reads never block checkpointing.</li>
+                  <li>Full backward compatibility is preserved for standard single-WAL databases.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://news.ycombinator.com/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on Hacker News</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Tech & AI #3 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="tech_ai">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80"
+                alt="Matter 1.5 Spec Adds Local Energy Management for Home Batteries, EV Chargers and Heat Pumps"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                  Tech &amp; AI
+                </span>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.theverge.com/matter-1-5-energy"
+                  data-story='{"source_url":"https://www.theverge.com/matter-1-5-energy","title":"Matter 1.5 Spec Adds Local Energy Management for Home Batteries, EV Chargers and Heat Pumps","category":"tech_ai","category_label":"Tech & AI","subcategory":null,"image_url":"https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80","reading_time_minutes":4,"source_name":"The Verge","summary_list":["Smart home devices can now negotiate time-of-use tariff schedules (such as Octopus Agile) directly over the local LAN without cloud API polling.","Major inverter and EV charger manufacturers pledged OTA firmware updates for existing hardware by Q1."],"detailed_context":["Home Assistant and Apple Home already support the new energy cluster definitions in their latest beta builds.","Local fallback prevents EV charging failures when vendor cloud servers experience downtime.","Standardizes bi-directional V2H (Vehicle-to-Home) state-of-charge reporting."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>The Verge</span>
+                <span>~4 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.theverge.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Matter 1.5 Spec Adds Local Energy Management for Home Batteries, EV Chargers and Heat Pumps
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Smart home devices can now negotiate time-of-use tariff schedules (such as Octopus Agile) directly over the local LAN without cloud API polling.</li>
+                <li>Major inverter and EV charger manufacturers pledged OTA firmware updates for existing hardware by Q1.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Home Assistant and Apple Home already support the new energy cluster definitions in their latest beta builds.</li>
+                  <li>Local fallback prevents EV charging failures when vendor cloud servers experience downtime.</li>
+                  <li>Standardizes bi-directional V2H (Vehicle-to-Home) state-of-charge reporting.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.theverge.com/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on The Verge</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sports #2: Football (Premier League) -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="sports">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80"
+                alt="Premier League Title Race Tightens as Top Three Separated by Two Points Entering Winter Run"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Sports
+                  </span>
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    Football • Premier League
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.bbc.co.uk/sport/football/premier-league-title-race"
+                  data-story='{"source_url":"https://www.bbc.co.uk/sport/football/premier-league-title-race","title":"Premier League Title Race Tightens as Top Three Separated by Two Points Entering Winter Run","category":"sports","category_label":"Sports","subcategory":"Football • Premier League","image_url":"https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80","reading_time_minutes":3,"source_name":"BBC Sport - Premier League","summary_list":["Dropped points across Sunday late fixtures compressed the top of the table, with goal difference and head-to-head December clashes looming large.","PGMOL published its mid-season semi-automated offside telemetry review, confirming average VAR check durations have dropped by 34 seconds."],"detailed_context":["Arsenal boast the league best defensive record with just 9 goals conceded in 11 matches.","Post-international break fixtures feature three top-six head-to-head encounters within 10 days.","Fixture congestion increases in December with Champions League League Phase matchdays 5 and 6."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>BBC Sport - Premier League</span>
+                <span>~3 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.bbc.co.uk/sport/football/premier-league" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Premier League Title Race Tightens as Top Three Separated by Two Points Entering Winter Run
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Dropped points across Sunday's late fixtures compressed the top of the table, with goal difference and head-to-head December clashes looming large.</li>
+                <li>PGMOL published its mid-season semi-automated offside telemetry review, confirming average VAR check durations have dropped by 34 seconds.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Arsenal boast the league's best defensive record with just 9 goals conceded in 11 matches.</li>
+                  <li>Post-international break fixtures feature three top-six head-to-head encounters within 10 days.</li>
+                  <li>Fixture congestion increases in December with Champions League League Phase matchdays 5 and 6.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.bbc.co.uk/sport/football/premier-league" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on BBC Sport - Premier League</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sports #3: Formula 1 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="sports">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80"
+                alt="FIA Tweaks Active Aero Override Thresholds Ahead of Final Triple-Header Showdown"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Sports
+                  </span>
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    Formula 1
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.bbc.co.uk/sport/formula1-active-aero"
+                  data-story='{"source_url":"https://www.bbc.co.uk/sport/formula1-active-aero","title":"FIA Tweaks Active Aero Override Thresholds Ahead of Final Triple-Header Showdown","category":"sports","category_label":"Sports","subcategory":"Formula 1","image_url":"https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80","reading_time_minutes":4,"source_name":"BBC Sport - Formula 1","summary_list":["Technical directives issued to all 11 teams refine energy deployment recovery maps on high-speed straights following driver feedback in São Paulo.","McLaren, Ferrari, and Red Bull arrive at the season closing stretch within 28 points in the Constructors Championship battle."],"detailed_context":["Cold desert night temperatures in Las Vegas are expected to test front-tyre graining across long stints.","Wind-tunnel aerodynamic testing allocations reset on 1 January based on final Constructors standings.","Pirelli confirmed C3, C4, and C5 compounds for the upcoming street circuit weekend."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>BBC Sport - Formula 1</span>
+                <span>~4 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.bbc.co.uk/sport/formula1" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  FIA Tweaks Active Aero Override Thresholds Ahead of Final Triple-Header Showdown
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Technical directives issued to all 11 teams refine energy deployment recovery maps on high-speed straights following driver feedback in São Paulo.</li>
+                <li>McLaren, Ferrari, and Red Bull arrive at the season's closing stretch within 28 points in the Constructors' Championship battle.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Cold desert night temperatures in Las Vegas are expected to test front-tyre graining across long stints.</li>
+                  <li>Wind-tunnel aerodynamic testing allocations reset on 1 January based on final Constructors' standings.</li>
+                  <li>Pirelli confirmed C3, C4, and C5 compounds for the upcoming street circuit weekend.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.bbc.co.uk/sport/formula1" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on BBC Sport - Formula 1</span><span aria-hidden="true">↗</span>
+              </a>
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">+ Autosport F1</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sports #4: Wider Sports -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="sports">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80"
+                alt="England Name Dynamic Back-Row Trio for Twickenham Autumn Internationals Clash"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Sports
+                  </span>
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    Wider Sports
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.bbc.co.uk/sport/rugby-union-england"
+                  data-story='{"source_url":"https://www.bbc.co.uk/sport/rugby-union-england","title":"England Name Dynamic Back-Row Trio for Twickenham Autumn Internationals Clash","category":"sports","category_label":"Sports","subcategory":"Wider Sports","image_url":"https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80","reading_time_minutes":3,"source_name":"BBC Sport - Top Stories","summary_list":["Steve Borthwick has opted for a 6-2 forwards bench split to counter the Springboks set-piece power in Saturday sold-out Allianz Stadium test.","Meanwhile in tennis, Jack Draper secured his opening round-robin victory in straight sets at the season-ending ATP Finals in Turin."],"detailed_context":["England lineout steal percentage rose to 22% in the opening autumn fixture.","Draper fired 14 aces and saved all four break points faced against top-five opposition in Turin.","England Cricket also confirmed their 16-player touring party for next month three-Test series."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>BBC Sport - Top Stories</span>
+                <span>~3 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.bbc.co.uk/sport" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  England Name Dynamic Back-Row Trio for Twickenham Autumn Internationals Clash
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Steve Borthwick has opted for a 6-2 forwards bench split to counter the Springboks' set-piece power in Saturday's sold-out Allianz Stadium test.</li>
+                <li>Meanwhile in tennis, Jack Draper secured his opening round-robin victory in straight sets at the season-ending ATP Finals in Turin.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>England's lineout steal percentage rose to 22% in the opening autumn fixture.</li>
+                  <li>Draper fired 14 aces and saved all four break points faced against top-five opposition in Turin.</li>
+                  <li>England Cricket also confirmed their 16-player touring party for next month's three-Test series.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.bbc.co.uk/sport" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on BBC Sport - Top Stories</span><span aria-hidden="true">↗</span>
+              </a>
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">+ The Guardian Sport</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Culture #1 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="entertainment">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=80"
+                alt="Mathematicians Uncover Hidden Geometric Symmetry Linking Fluid Turbulence and Prime Gaps"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Culture
+                  </span>
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    Longform &amp; Science
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.quantamagazine.org/fluid-turbulence-primes"
+                  data-story='{"source_url":"https://www.quantamagazine.org/fluid-turbulence-primes","title":"Mathematicians Uncover Hidden Geometric Symmetry Linking Fluid Turbulence and Prime Gaps","category":"entertainment","category_label":"Culture","subcategory":"Longform & Science","image_url":"https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=80","reading_time_minutes":8,"source_name":"Quanta Magazine","summary_list":["A landmark collaborative proof translates chaotic Navier-Stokes vortex cascades into spectral trace formulas previously seen only in analytic number theory.","Researchers say the duality offers a new mathematical toolkit for bounding extreme wave formation in climate and aerodynamic simulations."],"detailed_context":["Formalized in Lean 4 alongside the traditional 90-page peer-reviewed manuscript.","Bridges random matrix statistics with 3D incompressible Euler flow singularities.","Provides an accessible visual explainer of how energy dissipates across eddy scales."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Quanta Magazine</span>
+                <span>~8 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.quantamagazine.org/" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Mathematicians Uncover Hidden Geometric Symmetry Linking Fluid Turbulence and Prime Gaps
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>A landmark collaborative proof translates chaotic Navier-Stokes vortex cascades into spectral trace formulas previously seen only in analytic number theory.</li>
+                <li>Researchers say the duality offers a new mathematical toolkit for bounding extreme wave formation in climate and aerodynamic simulations.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Formalized in Lean 4 alongside the traditional 90-page peer-reviewed manuscript.</li>
+                  <li>Bridges random matrix statistics with 3D incompressible Euler flow singularities.</li>
+                  <li>Provides an accessible visual explainer of how energy dissipates across eddy scales.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.quantamagazine.org/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on Quanta Magazine</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Culture #2 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="entertainment">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80"
+                alt="BFI Southbank Announces 70mm VistaVision Restoration Season for Winter 2026"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Culture
+                  </span>
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    Film &amp; Cinema
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.empireonline.com/bfi-70mm-season"
+                  data-story='{"source_url":"https://www.empireonline.com/bfi-70mm-season","title":"BFI Southbank Announces 70mm VistaVision Restoration Season for Winter 2026","category":"entertainment","category_label":"Culture","subcategory":"Film & Cinema","image_url":"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80","reading_time_minutes":5,"source_name":"Empire Online","summary_list":["Newly struck photochemical prints of classic widescreen epics and modern large-format landmarks will screen throughout December and January.","Independent UK cinemas recorded a 19% year-on-year jump in repertory and celluloid screening attendance among under-35 audiences."],"detailed_context":["Horizontal 8-perforation 35mm VistaVision negative area offers nearly triple the resolution of standard 4-perf 35mm film.","Includes director Q&As and an exhibition of vintage projection lenses at BFI Southbank.","Priority booking opens this Thursday, with general public tickets on Friday at 11:00 GMT."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Empire Online</span>
+                <span>~5 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.empireonline.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  BFI Southbank Announces 70mm VistaVision Restoration Season for Winter 2026
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Newly struck photochemical prints of classic widescreen epics and modern large-format landmarks will screen throughout December and January.</li>
+                <li>Independent UK cinemas recorded a 19% year-on-year jump in repertory and celluloid screening attendance among under-35 audiences.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Horizontal 8-perforation 35mm VistaVision negative area offers nearly triple the resolution of standard 4-perf 35mm film.</li>
+                  <li>Includes director Q&amp;As and an exhibition of vintage projection lenses at BFI Southbank.</li>
+                  <li>Priority booking opens this Thursday, with general public tickets on Friday at 11:00 GMT.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.empireonline.com/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on Empire Online</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Food #1 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="food">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80"
+                alt="The Science of Cold-Start Caramelized Allium Jus and Crispy Pan-Roasted Mushrooms"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Food
+                  </span>
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    Technique &amp; Recipe
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://www.seriouseats.com/cold-start-mushrooms"
+                  data-story='{"source_url":"https://www.seriouseats.com/cold-start-mushrooms","title":"The Science of Cold-Start Caramelized Allium Jus and Crispy Pan-Roasted Mushrooms","category":"food","category_label":"Food","subcategory":"Technique & Recipe","image_url":"https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80","reading_time_minutes":5,"source_name":"Serious Eats","summary_list":["Starting halved king oyster and chestnut mushrooms in a cold pan with two tablespoons of water collapses internal air pockets before browning, cutting oil absorption by 60%.","Deglazing the fond with dry sherry, roasted yeast extract, and cold-mounted butter yields a glossy, steakhouse-grade emulsion in 18 minutes."],"detailed_context":["Mushrooms are roughly 85% water with sponge-like chitin cell walls that soak up raw fat if added to hot oil immediately.","Steaming first for 4 minutes expels moisture rapidly and concentrates natural glutamates for deep Maillard browning.","Pairs cleanly with polenta, sourdough toast, or pan-seared duck breast."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Serious Eats</span>
+                <span>~5 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://www.seriouseats.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  The Science of Cold-Start Caramelized Allium Jus and Crispy Pan-Roasted Mushrooms
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Starting halved king oyster and chestnut mushrooms in a cold pan with two tablespoons of water collapses internal air pockets before browning, cutting oil absorption by 60%.</li>
+                <li>Deglazing the fond with dry sherry, roasted yeast extract, and cold-mounted butter yields a glossy, steakhouse-grade emulsion in 18 minutes.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Mushrooms are roughly 85% water with sponge-like chitin cell walls that soak up raw fat if added to hot oil immediately.</li>
+                  <li>Steaming first for 4 minutes expels moisture rapidly and concentrates natural glutamates for deep Maillard browning.</li>
+                  <li>Pairs cleanly with polenta, sourdough toast, or pan-seared duck breast.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://www.seriouseats.com/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on Serious Eats</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Niche & Hobbies #1 -->
+        <article class="story-card surface-card rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition" data-category="niche_hobbies">
+          <div>
+            <div class="card-media-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80"
+                alt="Jellyfin Server Major Release Ships Hardware AV1 Tone-Mapping and Instant Trickplay Scrubbing"
+                loading="lazy"
+                width="800"
+                height="450"
+              />
+              <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/65 via-black/25 to-transparent">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-mono font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full bg-black/70 text-white backdrop-blur-md">
+                    Niche
+                  </span>
+                  <span class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pink-600/85 text-white backdrop-blur-md">
+                    Self-Hosting • Release
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="save-btn"
+                  data-url="https://github.com/jellyfin/jellyfin/releases"
+                  data-story='{"source_url":"https://github.com/jellyfin/jellyfin/releases","title":"Jellyfin Server Major Release Ships Hardware AV1 Tone-Mapping and Instant Trickplay Scrubbing","category":"niche_hobbies","category_label":"Niche","subcategory":"Self-Hosting • Release","image_url":"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80","reading_time_minutes":4,"source_name":"Jellyfin Releases","summary_list":["Upgraded FFmpeg 7.1 pipeline enables zero-copy Vulkan/QSV HDR10-to-SDR tone-mapping and hardware AV1 encoding across Intel Arc, AMD, and NVENC GPUs.","Database schema migration cuts large music and 4K library scan times by 55% while adding native chapter-aware intro/credit skip markers."],"detailed_context":["Admin note: Back up your /config and jellyfin.db SQLite files before pulling the :latest Docker image as database migrations are one-way.","LinuxServer.io and official jellyfin/jellyfin container images are live for amd64 and arm64.","Marvel Snap and Hearthstone feeds had no major balance patches in the last 24h window and were filtered per quota rules."],"is_narrative":false}'
+                  aria-pressed="false"
+                  aria-label="Save article for later"
+                  title="Save for later"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-2 text-xs font-mono mb-2" style="color: var(--text-secondary);">
+                <span>Jellyfin Releases</span>
+                <span>~4 min read</span>
+              </div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold leading-snug mb-3">
+                <a href="https://github.com/jellyfin/jellyfin/releases" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                  Jellyfin Server Major Release Ships Hardware AV1 Tone-Mapping and Instant Trickplay Scrubbing
+                </a>
+              </h3>
+              <ul class="space-y-2 text-sm leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                <li>Upgraded FFmpeg 7.1 pipeline enables zero-copy Vulkan/QSV HDR10-to-SDR tone-mapping and hardware AV1 encoding across Intel Arc, AMD, and NVENC GPUs.</li>
+                <li>Database schema migration cuts large music and 4K library scan times by 55% while adding native chapter-aware intro/credit skip markers.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3 pt-3 border-t" style="border-color: var(--border-soft);">
+            <details class="tell-me-more">
+              <summary class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider py-1 hover:opacity-80" style="color: var(--text-primary);">
+                <span>Tell Me More (3 points)</span>
+                <svg class="drawer-chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="drawer-body mt-2.5 p-3.5 rounded-xl elevated-surface">
+                <ul class="space-y-2 text-xs leading-relaxed pl-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Admin note: Back up your `/config` and `jellyfin.db` SQLite files before pulling the `:latest` Docker image as database migrations are one-way.</li>
+                  <li>LinuxServer.io and official `jellyfin/jellyfin` container images are live for `amd64` and `arm64`.</li>
+                  <li>Marvel Snap and Hearthstone feeds had no major balance patches in the last 24h window and were filtered per quota rules.</li>
+                </ul>
+              </div>
+            </details>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
+              <a href="https://github.com/jellyfin/jellyfin/releases" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold hover:underline" style="color: var(--text-primary);">
+                <span>Read on Jellyfin Releases</span><span aria-hidden="true">↗</span>
+              </a>
+              <span class="text-[11px] opacity-75" style="color: var(--text-secondary);">+ LinuxServer.io</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. SAVED FOR LATER SECTION (Populated from localStorage across daily builds) -->
+    <section id="section-saved" aria-labelledby="saved-stories-heading" class="space-y-5" hidden>
+      <div class="flex items-center justify-between border-b pb-2.5" style="border-color: var(--border-soft);">
+        <div>
+          <h2 id="saved-stories-heading" class="font-serif text-xl sm:text-2xl font-bold tracking-tight">
+            Saved for Later
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-secondary);">
+            Stored on this device so you can catch up any day, even after tomorrow's update.
+          </p>
+        </div>
+        <button
+          id="clear-saved-btn"
+          type="button"
+          class="text-xs font-mono underline px-2.5 py-1 rounded-md elevated-surface hover:opacity-80"
+          style="color: var(--accent-iris);"
+          hidden
+        >
+          Clear All
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      <div id="saved-empty-state" class="surface-card rounded-2xl p-8 sm:p-12 text-center max-w-md mx-auto my-6">
+        <div class="w-12 h-12 rounded-full elevated-surface mx-auto mb-3 flex items-center justify-center" style="color: var(--accent-iris);">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg font-bold mb-1">No saved stories yet</h3>
+        <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--text-secondary);">
+          Tap the bookmark icon in the top-right corner of any story card to save it here for weekend or evening reading.
+        </p>
+      </div>
+
+      <!-- Saved Cards Grid -->
+      <div id="saved-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5" hidden></div>
+    </section>
+
+  </main>
+
+  <!-- Floating Morphing Bottom Navigation Bar (Adapted from c09-bnav with Icons & Labels) -->
+  <div class="c09-bnav-dock">
+    <nav class="c09-bnav" id="c09-bnav" aria-label="Category and Saved navigation">
+      <span class="c09-bnav__blob" id="c09-blob" aria-hidden="true"></span>
+
+      <button type="button" class="c09-bnav__btn c09-bnav__btn--active" data-filter="all" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" />
+          <rect x="14" y="3" width="7" height="7" rx="1.5" />
+          <rect x="3" y="14" width="7" height="7" rx="1.5" />
+          <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        </svg>
+        <span class="c09-bnav__label">All</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="uk_news" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2v4" />
+          <path d="M8 6h8l1 14H7L8 6z" />
+          <path d="M5 20h14" />
+          <circle cx="12" cy="11" r="2" />
+        </svg>
+        <span class="c09-bnav__label">UK</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="world_news" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3.6 9h16.8" />
+          <path d="M3.6 15h16.8" />
+          <path d="M11.5 3a17 17 0 000 18" />
+          <path d="M12.5 3a17 17 0 010 18" />
+        </svg>
+        <span class="c09-bnav__label">World</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="tech_ai" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="4" width="16" height="16" rx="2" />
+          <rect x="9" y="9" width="6" height="6" />
+          <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+        </svg>
+        <span class="c09-bnav__label">Tech</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="sports" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9H4.5a2.5 2.5 0 010-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 000-5H18" />
+          <path d="M4 22h16" />
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+          <path d="M18 2H6v7a6 6 0 0012 0V2z" />
+        </svg>
+        <span class="c09-bnav__label">Sports</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="entertainment" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="3" width="20" height="18" rx="2" />
+          <path d="M7 3v18M17 3v18M2 8h5M2 12h20M2 16h5M17 8h5M17 16h5" />
+        </svg>
+        <span class="c09-bnav__label">Culture</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="food" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2" />
+          <path d="M7 2v20" />
+          <path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" />
+        </svg>
+        <span class="c09-bnav__label">Food</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="niche_hobbies" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="8" rx="2" />
+          <rect x="2" y="14" width="20" height="8" rx="2" />
+          <line x1="6" y1="6" x2="6.01" y2="6" />
+          <line x1="6" y1="18" x2="6.01" y2="18" />
+        </svg>
+        <span class="c09-bnav__label">Niche</span>
+      </button>
+
+      <button type="button" class="c09-bnav__btn" data-filter="saved" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+        <span class="c09-bnav__label">Saved</span>
+        <span id="saved-count-badge" class="c09-bnav__badge" hidden>0</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- External Controller Script -->
+  <script src="app.js" defer></script>
+</body>
+</html>

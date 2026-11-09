@@ -2,8 +2,8 @@ name: Curate & Deploy Daily News Briefing
 
 on:
   schedule:
-    # Run at 06:30 UTC every day
-    - cron: '30 6 * * *'
+    # Run at 06:25 UTC every day (off-peak minute to avoid GitHub Actions :00/:30 cron queue drops)
+    - cron: '25 6 * * *'
   workflow_dispatch:
     inputs:
       force_day:
